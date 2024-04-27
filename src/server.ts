@@ -7,10 +7,11 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors'
 import path from 'path';
 
+
 const app = express();
 app.use(cors(
   {
-    origin: 'http://localhost:3001',
+    origin: process.env.TRUSTED_ORIGINS?.split(','),
     credentials: true
   }
 ))
