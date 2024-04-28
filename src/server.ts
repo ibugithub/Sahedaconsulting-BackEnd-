@@ -39,13 +39,13 @@ fs.readdir(dir1, function (err, files) {
 });
 
 
-const dir2 = path.join(__dirname, '../../');
+const dir2 = path.join(__dirname, '/');
 
 fs.readdir(dir2, function (err, files) {
   if (err) {
       return console.log('Unable to scan directory: ' + err);
   } 
-  console.log(" <== path.join(__dirname, '../../ ==> ", dir2)
+  console.log(" <== path.join(__dirname, '/ ==> ", dir2)
   files.forEach(function (file) {
       console.log('files***', file); 
   });
