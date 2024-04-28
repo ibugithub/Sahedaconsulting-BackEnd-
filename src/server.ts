@@ -22,6 +22,15 @@ app.use(loggerMiddleWare)
 connectDb();
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
+
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+  console.log("\n \n +++ uploadsdir has been created +++ \n \n")
+} else {
+  console.log(' \n \n uploadsdir already exists!!! \n \n')
+}
+
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 console.log('*** The given path *** ', path.join(__dirname, '../uploads') )
 
