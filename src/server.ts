@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 console.log('upload path***** ',(path.join(__dirname, '../uploads')));
+console.log('alter upload path***** ',(path.join(__dirname, '../../uploads')));
 app.use('/api/users', userRoutes);
 app.use('/api/prod', productRoutes);
 
