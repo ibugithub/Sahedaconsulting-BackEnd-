@@ -20,14 +20,15 @@ export const prodUploadS = async (req: Request, res: Response) => {
     console.log('results are', results);
   } catch (err) {
     console.error("Error while uploading image on cloudinary at productService.ts", err);
-  } finally {
-    console.log('I am in prod upload inside the finally block....')
-    if (fs.existsSync(imagePath)) {
-      fs.unlinkSync(imagePath);
-    } else {
-      console.log('Could not find the file')
-    }
-  }
+  } 
+  // finally {
+  //   console.log('I am in prod upload inside the finally block....')
+  //   if (fs.existsSync(imagePath)) {
+  //     fs.unlinkSync(imagePath);
+  //   } else {
+  //     console.log('Could not find the file')
+  //   }
+  // }
 
   const { product, description, quantity, price } = req.body
   const newProduct = new Product({
