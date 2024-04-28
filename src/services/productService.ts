@@ -4,7 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 export const prodUploadS = async (req: Request, res: Response) => {
-  const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
+  const imagePath = (req.file as Express.Multer.File).path
   const { product, description, quantity, price } = req.body
   const newProduct = new Product({
     name: product,
