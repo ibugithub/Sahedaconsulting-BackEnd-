@@ -2,9 +2,29 @@ import { Request, Response } from "express"
 import { Product } from "../models/Product"
 import fs from 'fs';
 import path from 'path';
+import { v2 as cloudinary } from 'cloudinary';
 
 export const prodUploadS = async (req: Request, res: Response) => {
   const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
+  const options = {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+  };
+
+  try {
+    const results = await cloudinary.uploader.upload(imagePath, options);
+    console.log('results are', results);
+  } catch (err) {
+    console.error("Error while uploading image on cloudinary at productService.ts", err);
+  } finally {
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    } else {
+      console.log('Could not find the file')
+    }
+  }
+
   const { product, description, quantity, price } = req.body
   const newProduct = new Product({
     name: product,
