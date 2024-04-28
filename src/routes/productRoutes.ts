@@ -23,7 +23,7 @@ const filterFile = (req: Request, file: Express.Multer.File, cb: (error: Error |
 }
 console.log('I am at the route****')
 const upload = multer({storage: storage, fileFilter: filterFile})
-console.log('the storage is  ', storage)
+console.log('i am at the bottom of the route****')
 router.post('/upload', upload.single('image'), prodUploadC);
 router.get('/showprod', showProductC);
 router.put('/edit/:id', upload.single('imgFile'), updateProductC)
