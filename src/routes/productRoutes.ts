@@ -21,6 +21,7 @@ const filterFile = (req: Request, file: Express.Multer.File, cb: (error: Error |
     cb(new Error("Only JPEG files are supported"), false)
   }
 }
+console.log('I am at the route****')
 const upload = multer({storage: storage, fileFilter: filterFile})
 router.post('/upload', upload.single('image'), prodUploadC);
 router.get('/showprod', showProductC);
