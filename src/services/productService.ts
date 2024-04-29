@@ -11,7 +11,6 @@ export const prodUploadS = async (req: Request, res: Response) => {
     unique_filename: false,
     overwrite: true,
   };
-
   try {
     const results = await cloudinary.uploader.upload(imagePath, options);
     const { product, description, quantity, price } = req.body
@@ -26,7 +25,7 @@ export const prodUploadS = async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'product will be uploaded' })
   } catch (err) {
     console.error("Error while uploading image on cloudinary at productService.ts", err);
-  } 
+  }
   finally {
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
@@ -43,42 +42,50 @@ export const showProductS = async (req: Request, res: Response) => {
 }
 
 export const updateProductS = async (req: Request, res: Response) => {
-  try {
-    console.log('the body is', req.body);
-    const prodId = req.params.id;
-    const { name, description, price, quantity, imgPath } = req.body;
-    const product = await Product.findById(prodId);
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
+  const prodId = req.params.id;
+  const { name, description, price, quantity, imgPath } = req.body;
+  const product = await Product.findById(prodId);
 
-    let imagePath;
-    let oldImgPath;
-    if (req.file) {
-      imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
-      oldImgPath = imgPath
-    } else {
-      imagePath = imgPath
-    }
-    product.name = name;
-    product.description = description;
-    product.price = price;
-    product.quantity = quantity;
-    product.image = imagePath
-    await product.save();
-    if (oldImgPath) {
-      const editedImagePath = path.join(__dirname, '..', '..', oldImgPath);
-      if (fs.existsSync(editedImagePath)) {
-        fs.unlinkSync(editedImagePath);
-      } else {
-        console.log('Could not find the file')
+  if (!product) {
+    return res.status(404).json({ error: 'Product not found' });
+  }
+
+  if (req.file) {
+    const newImage = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
+    const oldImage = imgPath
+    const options = {
+      use_filename: true,
+      unique_filename: false,
+      overwrite: true,
+    };
+    try {
+      const results = await cloudinary.uploader.upload(newImage, options);
+      product.name = name;
+      product.description = description;
+      product.price = price;
+      product.quantity = quantity;
+      product.image = results.public_id
+      await product.save();
+    } catch (error) {
+      console.error("Error while editing the image at productService.ts", error);
+    } finally {
+      if (fs.existsSync(newImage)) {
+        fs.unlinkSync(newImage);
+      }
+      else {
+        console.log('Could not find the file at productService.ts')
+      }
+      if (oldImage) {
+        try {
+          const results = cloudinary.uploader.destroy(oldImage);
+        } catch (err) {
+          console.error("Error destroing image from cloudinary at productService.ts file", err);
+        }
       }
     }
-    res.status(200).json({ message: 'Product updated successfully', product: product });
-  } catch (error) {
-    console.error("Error updating product", error);
-    res.status(400).json({ error: 'Internal server error' });
+
   }
+  res.status(200).json({ message: 'Product updated successfully', product: product });
 }
 
 export const deleteProductS = async (req: Request, res: Response) => {
@@ -89,11 +96,11 @@ export const deleteProductS = async (req: Request, res: Response) => {
       res.status(404).json({ message: 'Product not found' });
       return;
     }
-    const imagePath = path.join(__dirname, '..', '..', deletedProduct.image);
+    const image = deletedProduct.image;
     try {
-      fs.unlinkSync(imagePath);
+      const results = cloudinary.uploader.destroy(image);
     } catch (err) {
-      console.error("Error unlinking image", err);
+      console.error("Error destroing image from cloudinary at productService.ts file", err);
     }
     res.status(200).json({ message: "Product deleted" });
   } catch (error) {
