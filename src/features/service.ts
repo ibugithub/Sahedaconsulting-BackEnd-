@@ -1,10 +1,9 @@
 import { Request, Response } from "express"
 import { Product } from "../models/Product"
 import fs from 'fs';
-import path from 'path';
 import { v2 as cloudinary } from 'cloudinary';
 
-export const prodUploadS = async (req: Request, res: Response) => {
+export const serviceUploadS = async (req: Request, res: Response) => {
   const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
   const options = {
     use_filename: true,
@@ -36,12 +35,12 @@ export const prodUploadS = async (req: Request, res: Response) => {
 
 }
 
-export const showProductS = async (req: Request, res: Response) => {
+export const showServiceS = async (req: Request, res: Response) => {
   const products = await Product.find();
   return res.status(200).json({ message: 'this is the products', products });
 }
 
-export const updateProductS = async (req: Request, res: Response) => {
+export const updateServiceS = async (req: Request, res: Response) => {
   const prodId = req.params.id;
   const { name, description, price, quantity, imgPath } = req.body;
   const product = await Product.findById(prodId);
@@ -88,7 +87,7 @@ export const updateProductS = async (req: Request, res: Response) => {
   res.status(200).json({ message: 'Product updated successfully', product: product });
 }
 
-export const deleteProductS = async (req: Request, res: Response) => {
+export const deleteServiceS = async (req: Request, res: Response) => {
   try {
     const prodId = req.params.id;
     const deletedProduct = await Product.findByIdAndDelete(prodId);
