@@ -33,7 +33,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/users', userRoutes);
-app.use('/api/prod', servicetRoutes);
+app.use('/api/service', servicetRoutes);
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
 })

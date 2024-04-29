@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-const productShema = new mongoose.Schema({
-  name: {
+const serviceShema = new mongoose.Schema({
+  title: {
     type: "string",
     required: true
   },
@@ -13,14 +13,10 @@ const productShema = new mongoose.Schema({
     type: "number",
     required: true
   },
-  quantity: {
-    type: "number",
-    default: 0
-  },
   image: {
     type: "string",
     required: true
   }
 })
 
-export const Product = mongoose.model('Product', productShema)
+export const Service = mongoose.model('Service', serviceShema)

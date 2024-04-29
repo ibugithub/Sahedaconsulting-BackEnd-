@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { Product } from "../models/Product"
+import { Service } from "../models/ServiceModel"
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -12,42 +12,44 @@ export const serviceUploadS = async (req: Request, res: Response) => {
   };
   try {
     const results = await cloudinary.uploader.upload(imagePath, options);
-    const { product, description, quantity, price } = req.body
-    const newProduct = new Product({
-      name: product,
+    const { service, description, price } = req.body
+    console.log('the body is ', req.body);
+    const newService = new Service({
+      title: service,
       description: description,
       price: price,
-      quantity: quantity,
       image: results.public_id
     })
-    await newProduct.save()
-    return res.status(200).json({ message: 'product will be uploaded' })
+    await newService.save()
+    return res.status(200).json({ message: 'Service will be uploaded' })
   } catch (err) {
-    console.error("Error while uploading image on cloudinary at productService.ts", err);
+    console.error("Error while uploading image on cloudinary at service.ts", err);
   }
   finally {
     if (fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
     } else {
-      console.log('Could not find the file at productService.ts')
+      console.log('Could not find the file at service.ts')
     }
   }
 
 }
 
 export const showServiceS = async (req: Request, res: Response) => {
-  const products = await Product.find();
-  return res.status(200).json({ message: 'this is the products', products });
+  const services = await Service.find();
+  return res.status(200).json({ message: 'this is the service', services });
 }
 
 export const updateServiceS = async (req: Request, res: Response) => {
-  const prodId = req.params.id;
-  const { name, description, price, quantity, imgPath } = req.body;
-  const product = await Product.findById(prodId);
+  const serviceId = req.params.id;
+  const { title, description, price, imgPath } = req.body;
+  const service = await Service.findById(serviceId);
 
-  if (!product) {
-    return res.status(404).json({ error: 'Product not found' });
+  if (!service) {
+    return res.status(404).json({ error: 'Service not found' });
   }
+
+  let newImagePath;
 
   if (req.file) {
     const newImage = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
@@ -59,51 +61,53 @@ export const updateServiceS = async (req: Request, res: Response) => {
     };
     try {
       const results = await cloudinary.uploader.upload(newImage, options);
-      product.name = name;
-      product.description = description;
-      product.price = price;
-      product.quantity = quantity;
-      product.image = results.public_id
-      await product.save();
+      newImagePath = results.public_id
     } catch (error) {
-      console.error("Error while editing the image at productService.ts", error);
+      console.error("Error while editing the image at service.ts", error);
     } finally {
       if (fs.existsSync(newImage)) {
         fs.unlinkSync(newImage);
       }
       else {
-        console.log('Could not find the file at productService.ts')
+        console.log('Could not find the file at service.ts')
       }
       if (oldImage) {
         try {
           const results = cloudinary.uploader.destroy(oldImage);
         } catch (err) {
-          console.error("Error destroing image from cloudinary at productService.ts file", err);
+          console.error("Error destroing image from cloudinary at service.ts file", err);
         }
       }
     }
-
+    res.status(200).json({ message: 'Product updated successfully', service: service });
+  } else {
+    newImagePath = imgPath
   }
-  res.status(200).json({ message: 'Product updated successfully', product: product });
+  service.title = title;
+  service.description = description;
+  service.price = price;
+  service.image = newImagePath;
+  await service.save();
+  res.status(200).json({ message: 'Product updated successfully'});
 }
 
 export const deleteServiceS = async (req: Request, res: Response) => {
   try {
-    const prodId = req.params.id;
-    const deletedProduct = await Product.findByIdAndDelete(prodId);
-    if (!deletedProduct) {
-      res.status(404).json({ message: 'Product not found' });
+    const serviceId = req.params.id;
+    const deletedService = await Service.findByIdAndDelete(serviceId);
+    if (!deletedService) {
+      res.status(404).json({ message: 'service not found' });
       return;
     }
-    const image = deletedProduct.image;
+    const image = deletedService.image;
     try {
       const results = cloudinary.uploader.destroy(image);
     } catch (err) {
-      console.error("Error destroing image from cloudinary at productService.ts file", err);
+      console.error("Error destroing image from cloudinary at service.ts file", err);
     }
-    res.status(200).json({ message: "Product deleted" });
+    res.status(200).json({ message: "service deleted" });
   } catch (error) {
-    console.error("Error deleting product", error);
+    console.error("Error deleting service", error);
     res.status(400).json({ error: 'Internal server error' });
   }
 }
