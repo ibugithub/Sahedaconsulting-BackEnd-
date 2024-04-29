@@ -79,7 +79,7 @@ export const updateServiceS = async (req: Request, res: Response) => {
         }
       }
     }
-    res.status(200).json({ message: 'Product updated successfully', service: service });
+    res.status(200).json({ message: 'Product updated successfully'});
   } else {
     newImagePath = imgPath
   }
