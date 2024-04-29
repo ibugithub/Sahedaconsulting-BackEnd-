@@ -5,9 +5,7 @@ import path from 'path';
 import { v2 as cloudinary } from 'cloudinary';
 
 export const prodUploadS = async (req: Request, res: Response) => {
-  console.log('I am in prod upload func at the top....')
   const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
-  console.log('I am in prod upload func under the imagePath....')
   const options = {
     use_filename: true,
     unique_filename: false,
@@ -15,31 +13,28 @@ export const prodUploadS = async (req: Request, res: Response) => {
   };
 
   try {
-    console.log('I am in prod upload func inside the try block...')
     const results = await cloudinary.uploader.upload(imagePath, options);
-    console.log('results are', results);
+    const { product, description, quantity, price } = req.body
+    const newProduct = new Product({
+      name: product,
+      description: description,
+      price: price,
+      quantity: quantity,
+      image: results.public_id
+    })
+    await newProduct.save()
+    return res.status(200).json({ message: 'product will be uploaded' })
   } catch (err) {
     console.error("Error while uploading image on cloudinary at productService.ts", err);
   } 
-  // finally {
-  //   console.log('I am in prod upload inside the finally block....')
-  //   if (fs.existsSync(imagePath)) {
-  //     fs.unlinkSync(imagePath);
-  //   } else {
-  //     console.log('Could not find the file')
-  //   }
-  // }
+  finally {
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    } else {
+      console.log('Could not find the file at productService.ts')
+    }
+  }
 
-  const { product, description, quantity, price } = req.body
-  const newProduct = new Product({
-    name: product,
-    description: description,
-    price: price,
-    quantity: quantity,
-    image: imagePath
-  })
-  await newProduct.save()
-  return res.status(200).json({ message: 'product will be uploaded' })
 }
 
 export const showProductS = async (req: Request, res: Response) => {

@@ -3,8 +3,8 @@ import { prodUploadC } from "../controllers/productController";
 import multer from "multer";
 import { showProductC, updateProductC, deleteProductC  } from "../controllers/productController";
 
-
 const router = express.Router();
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, 'uploads')
@@ -21,9 +21,7 @@ const filterFile = (req: Request, file: Express.Multer.File, cb: (error: Error |
     cb(new Error("Only JPEG files are supported"), false)
   }
 }
-console.log('I am at the route****')
 const upload = multer({storage: storage, fileFilter: filterFile})
-console.log('i am at the bottom of the route****')
 router.post('/upload', upload.single('image'), prodUploadC);
 router.get('/showprod', showProductC);
 router.put('/edit/:id', upload.single('imgFile'), updateProductC)

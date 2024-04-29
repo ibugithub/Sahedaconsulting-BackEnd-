@@ -16,9 +16,9 @@ app.use(cors(
     credentials: true
   }
 ))
+
 app.use(cookieParser());
 app.use(loggerMiddleWare)
-
 connectDb();
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
@@ -32,39 +32,8 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
-console.log('*** The given path *** ', path.join(__dirname, '../uploads') )
-
-
-const dir1 = path.join(__dirname, '../');
-
-fs.readdir(dir1, function (err, files) {
-  if (err) {
-      return console.log('Unable to scan directory: ' + err);
-  } 
-  console.log(" <== path.join(__dirname, '../ ==> ", dir1)
-  files.forEach(function (file) {
-      console.log('files***', file); 
-  });
-});
-
-
-const dir2 = path.join(__dirname, '../uploads');
-
-fs.readdir(dir2, function (err, files) {
-  if (err) {
-      return console.log('Unable to scan directory: ' + err);
-  } 
-  console.log(" <== path.join(__dirname, '../uploads' ==> ", dir2)
-  files.forEach(function (file) {
-      console.log('files***', file); 
-  });
-});
-
-
 app.use('/api/users', userRoutes);
 app.use('/api/prod', productRoutes);
-
-
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
 })
