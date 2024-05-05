@@ -1,12 +1,12 @@
 import express from 'express';
-import { register, login, logout} from '../controllers/userController';
+import { register, login, logout, refreshToken} from '../controllers/userController';
 import { authenticateToken} from '../middlewares/jwtMiddleware';
-import { authenticate } from '../controllers/userController';
+
 
 const router = express.Router();
 router.post('/register', register);
 router.post('/login', login);
-router.get('/authenticate', authenticateToken, authenticate);
-router.post('/logout', authenticateToken, logout);
+router.post('/logout', logout);
+router.post('/refresh', refreshToken);
 
 export default router;

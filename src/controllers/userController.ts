@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
-import { generateAccessToken, generateRefreshhToken } from '../Utils/jwtUtils';
+import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
 import { clearCookie } from '../Utils/clearCookie';
+import { refreshTokenF } from '../features/users';
+
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -58,7 +60,7 @@ export const login = async (req: Request, res: Response) => {
       res.status(401).json({ error: "Invalid Credintails" });
     }
     const accessToken = generateAccessToken({ userId: user.id, email: user.email });
-    const refreshToken = generateRefreshhToken({ userId: user.id, email: user.email });
+    const refreshToken = generateRefreshToken({ userId: user.id, email: user.email });
     res.status(200).json({ message: "Login successful", name: user.firstName + user.lastName, email: user.email, accessToken: accessToken, refreshToken: refreshToken });
 
   } catch (error) {
@@ -67,10 +69,10 @@ export const login = async (req: Request, res: Response) => {
   }
 };
 
-export const authenticate = (req: Request, res: Response) => {
-  res.status(200).json({ message: "user successfully authenticated" })
-}
-
 export const logout = (req: Request, res: Response) => {
   clearCookie(res, 'refreshToken');
+}
+
+export const refreshToken = (req: Request, res: Response) => {
+  refreshTokenF(req, res);
 }
