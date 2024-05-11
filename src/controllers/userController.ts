@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
 import { clearCookie } from '../Utils/clearCookie';
-import { refreshTokenF } from '../features/users';
+import { refreshTokenF, sendProfileDataF } from '../features/users';
 
 
 export const register = async (req: Request, res: Response) => {
@@ -76,3 +76,7 @@ export const logout = (req: Request, res: Response) => {
 export const refreshToken = (req: Request, res: Response) => {
   refreshTokenF(req, res);
 }
+
+export const sendProfileDataC = (req: Request, res: Response) => {
+  sendProfileDataF(req, res);
+};

@@ -13,7 +13,6 @@ export const serviceUploadS = async (req: Request, res: Response) => {
   try {
     const results = await cloudinary.uploader.upload(imagePath, options);
     const { service, description, price } = req.body
-    console.log('the body is ', req.body);
     const newService = new Service({
       title: service,
       description: description,
