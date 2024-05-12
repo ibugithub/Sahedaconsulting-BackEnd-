@@ -1,5 +1,6 @@
 import express from 'express';
-import { register, login, logout, refreshToken, sendProfileDataC} from '../controllers/userController';
+import { register, login, logout, refreshToken, sendProfileDataC, setImageC} from '../controllers/userController';
+import { upload } from './service';
 
 
 const router = express.Router();
@@ -8,5 +9,6 @@ router.post('/login', login);
 router.post('/logout', logout);
 router.post('/refresh', refreshToken);
 router.post('/profile', sendProfileDataC)
+router.post('/setImage', upload.single('image'), setImageC);
 
 export default router;

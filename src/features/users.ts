@@ -3,7 +3,8 @@ import { Request, Response } from 'express';
 import '../../dotenv'
 import { generateAccessToken } from '../Utils/jwtUtils';
 import { User } from '../models/User';
-
+import fs from 'fs';
+import { v2 as cloudinary } from 'cloudinary';
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
 export const refreshTokenF = (req: Request, res: Response) => {
@@ -18,22 +19,58 @@ export const refreshTokenF = (req: Request, res: Response) => {
   }
 }
 
-export const sendProfileDataF = async (req: Request, res: Response) => {
-  const accessToken = req.body.accessToken
-  const parsedAccessToken = JSON.parse(accessToken)
+const tokenToId = (token: string) => {
+  const parsedAccessToken = JSON.parse(token)
   try {
     const decodedToken = jwt.verify(parsedAccessToken, JWT_SECRET) as JwtPayload
-    const id = decodedToken.userId
-    try {
-      const user = await User.findById(id)
-      const data = { 'fullName': `${user?.firstName} ${user?.lastName}`, 'email': user?.email }
-      return res.status(200).json({ message: 'successfully sent the profile data', userInfo: data });
-    } catch (e) {
-      console.error('error while querying for user', e)
-      return res.status(401).json({ message: 'error while querying for user', error: e });
-    }
+    return decodedToken.userId
   } catch (err) {
     console.error('error while verifing accessToken', err)
-    return res.status(401).json({ message: 'error while verifing accessToken', error: err });
+  }
+}
+
+export const sendProfileDataF = async (req: Request, res: Response) => {
+  const accessToken = req.body.accessToken
+  const id = tokenToId(accessToken)
+  try {
+    const user = await User.findById(id)
+    const data = { 'fullName': `${user?.firstName} ${user?.lastName}`, 'email': user?.email, 'image': user?.image }
+    return res.status(200).json({ message: 'successfully sent the profile data', userInfo: data });
+  } catch (e) {
+    console.error('error while querying for user', e)
+    return res.status(401).json({ message: 'error while querying for user', error: e });
+  }
+}
+
+export const setImageF = async (req: Request, res: Response) => {
+  const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
+  const accessToken = req.body.token
+  const id = tokenToId(accessToken)
+
+  const options = {
+    use_filename: true,
+    unique_filename: false,
+    overwrite: true,
+  };
+
+  try {
+    const results = await cloudinary.uploader.upload(imagePath, options);
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    user.image = results.public_id
+    await user.save();
+    return res.status(200).json({ message: 'Image has been uploaded successfully' })
+  } catch (err) {
+    console.error("Error while uploading image on cloudinary at user.ts", err);
+  }
+
+  finally {
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+    } else {
+      console.log('Could not find the file at service.ts')
+    }
   }
 }

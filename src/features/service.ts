@@ -31,7 +31,6 @@ export const serviceUploadS = async (req: Request, res: Response) => {
       console.log('Could not find the file at service.ts')
     }
   }
-
 }
 
 export const showServiceS = async (req: Request, res: Response) => {
