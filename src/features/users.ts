@@ -15,7 +15,7 @@ export const refreshTokenF = (req: Request, res: Response) => {
     return res.status(200).json({ message: 'New Access Token has been created', accessToken: accessToken })
   } catch (err) {
     console.error("error in generating Accesstoken at 'refreshTokenF' at users.ts ", err);
-    return res.status(403).json({ message: 'Invalid refresh  token' })
+    return res.status(401).json({ message: 'Invalid refresh  token' })
   }
 }
 
@@ -30,8 +30,15 @@ const tokenToId = (token: string) => {
 }
 
 export const sendProfileDataF = async (req: Request, res: Response) => {
-  const accessToken = req.body.accessToken
+  const accessToken = req.headers.accesstoken
+  if (typeof accessToken !== 'string') { 
+    console.error('Access token must be a string at user.ts file');
+    return res.status(401).json({ message: 'Access token must be a string'});
+  }
   const id = tokenToId(accessToken)
+  if (!id) {
+    return res.status(401).json({ message: 'error while verifying access token'});
+  }
   try {
     const user = await User.findById(id)
     const data = { 'fullName': `${user?.firstName} ${user?.lastName}`, 'email': user?.email, 'image': user?.image }
