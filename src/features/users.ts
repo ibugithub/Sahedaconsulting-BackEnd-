@@ -50,16 +50,21 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
 }
 
 export const setImageF = async (req: Request, res: Response) => {
-  const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
-  const accessToken = req.body.token
+  const accessToken = req.headers.accesstoken
+  if (typeof accessToken !== 'string') { 
+    console.error('Access token must be a string at user.ts file');
+    return res.status(401).json({ message: 'Access token must be a string'});
+  }
   const id = tokenToId(accessToken)
-
+  if (!id) {
+    return res.status(401).json({ message: 'error while verifying access token'});
+  }
+  const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
   const options = {
     use_filename: true,
     unique_filename: false,
     overwrite: true,
   };
-
   try {
     const results = await cloudinary.uploader.upload(imagePath, options);
     const user = await User.findById(id)
@@ -68,7 +73,7 @@ export const setImageF = async (req: Request, res: Response) => {
     }
     user.image = results.public_id
     await user.save();
-    return res.status(200).json({ message: 'Image has been uploaded successfully' })
+    return res.status(200).json({ message: 'Image has been uploaded successfully', imgPath: results.public_id})
   } catch (err) {
     console.error("Error while uploading image on cloudinary at user.ts", err);
   }
@@ -79,5 +84,7 @@ export const setImageF = async (req: Request, res: Response) => {
     } else {
       console.log('Could not find the file at service.ts')
     }
+    const oldImage = req.body.oldImage;
+    cloudinary.uploader.destroy(oldImage);
   }
 }
