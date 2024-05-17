@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import { User } from '../models/User';
 import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
 import { clearCookie } from '../Utils/clearCookie';
-import { refreshTokenF, sendProfileDataF, setImageF} from '../features/users';
+import { refreshTokenF, sendProfileDataF, setImageF, saveUserDataF} from '../features/users';
 
 
 export const register = async (req: Request, res: Response) => {
@@ -83,4 +83,8 @@ export const sendProfileDataC = (req: Request, res: Response) => {
 
 export const setImageC = (req: Request, res: Response) => {
   setImageF(req, res);
+};
+
+export const saveUserDataC = (req: Request, res: Response) => {
+  saveUserDataF(req, res);
 };

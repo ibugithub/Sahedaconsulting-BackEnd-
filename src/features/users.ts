@@ -41,7 +41,7 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
   }
   try {
     const user = await User.findById(id)
-    const data = { 'fullName': `${user?.firstName} ${user?.lastName}`, 'email': user?.email, 'image': user?.image }
+    const data = { 'firstName' : user?.firstName, 'lastName' : user?.lastName, 'email': user?.email, 'image': user?.image }
     return res.status(200).json({ message: 'successfully sent the profile data', userInfo: data });
   } catch (e) {
     console.error('error while querying for user', e)
@@ -87,4 +87,26 @@ export const setImageF = async (req: Request, res: Response) => {
     const oldImage = req.body.oldImage;
     cloudinary.uploader.destroy(oldImage);
   }
+}
+
+export const saveUserDataF = async (req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken
+  const userData = req.body
+  if (typeof accessToken !== 'string') { 
+    console.error('Access token must be a string at user.ts file');
+    return res.status(401).json({ message: 'Access token must be a string'});
+  }
+  const id = tokenToId(accessToken)
+  if (!id) {
+    return res.status(401).json({ message: 'error while verifying access token'});
+  }
+  const user = await User.findById(id);
+  if (!user) {
+    console.error('Could not find user at user.ts');
+    return res.status(401).json({message: 'user not found'});
+  }
+  user.firstName = userData.first_name
+  user.lastName = userData.last_name
+  await user.save();
+  return res.status(200).json({ message: "User data has been updated successfully."})
 }
