@@ -18,6 +18,7 @@ export const registerF = async(req: Request, res: Response) => {
       email,
       password,
       cPassword,
+      role,
     }: UserInterface = req.body;
     if (!firstName || !lastName || !email || !password || !cPassword) {
       return res.status(400).json({ error: "All fields are required" });
@@ -35,6 +36,7 @@ export const registerF = async(req: Request, res: Response) => {
       lastName,
       email,
       password: hasedPassword,
+      role: role
     });
     await newUser.save();
     res.status(201).json({ message: "User has been registered successfully" });
