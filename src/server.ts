@@ -4,6 +4,7 @@ import servicetRoutes from './routes/service';
 import loggerMiddleWare from './middlewares/loggerMiddleware';
 import { connectDb } from '../config/database';
 import cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
 import cors from 'cors'
 import path from 'path';
 import fs from 'fs';
@@ -22,6 +23,7 @@ app.use(loggerMiddleWare)
 connectDb();
 app.use(express.json());
 app.use(express.urlencoded({ extended:true }));
+app.use(bodyParser.json());
 
 const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
