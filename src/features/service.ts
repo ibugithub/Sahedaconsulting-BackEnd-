@@ -4,14 +4,20 @@ import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
 export const serviceUploadS = async (req: Request, res: Response) => {
-  const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
+  let imagePath = "";
+  let results = { public_id: "noImage" };
+  if (req.file) {
+    imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
+  }
   const options = {
     use_filename: true,
     unique_filename: false,
     overwrite: true,
   };
   try {
-    const results = await cloudinary.uploader.upload(imagePath, options);
+    if (imagePath) {
+      results = await cloudinary.uploader.upload(imagePath, options);
+    }
     const { service, description, price } = req.body
     const newService = new Service({
       title: service,
@@ -25,7 +31,7 @@ export const serviceUploadS = async (req: Request, res: Response) => {
     console.error("Error while uploading image on cloudinary at service.ts", err);
   }
   finally {
-    if (fs.existsSync(imagePath)) {
+    if (imagePath && fs.existsSync(imagePath)) {
       fs.unlinkSync(imagePath);
     } else {
       console.log('Could not find the file at service.ts')
@@ -77,7 +83,7 @@ export const updateServiceS = async (req: Request, res: Response) => {
         }
       }
     }
-    res.status(200).json({ message: 'Product updated successfully'});
+    res.status(200).json({ message: 'Product updated successfully' });
   } else {
     newImagePath = imgPath
   }
@@ -86,7 +92,7 @@ export const updateServiceS = async (req: Request, res: Response) => {
   service.price = price;
   service.image = newImagePath;
   await service.save();
-  res.status(200).json({ message: 'Product updated successfully'});
+  res.status(200).json({ message: 'Product updated successfully' });
 }
 
 export const deleteServiceS = async (req: Request, res: Response) => {
@@ -98,10 +104,12 @@ export const deleteServiceS = async (req: Request, res: Response) => {
       return;
     }
     const image = deletedService.image;
-    try {
-      const results = cloudinary.uploader.destroy(image);
-    } catch (err) {
-      console.error("Error destroing image from cloudinary at service.ts file", err);
+    if (image) {
+      try {
+        const results = cloudinary.uploader.destroy(image);
+      } catch (err) {
+        console.error("Error destroing image from cloudinary at service.ts file", err);
+      }
     }
     res.status(200).json({ message: "service deleted" });
   } catch (error) {
