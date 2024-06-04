@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Request, Response } from 'express';
+import { request, Request, Response } from 'express';
 import '../../dotenv'
 import { User } from '../models/User';
 import fs from 'fs';
@@ -67,6 +67,28 @@ export const loginF = async (req : Request, res : Response) => {
   }
 };
 
+export const isAdministratorF = async(req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken
+  if (typeof accessToken !== 'string') { 
+    console.error('Access token must be a string at user.ts file');
+    return res.status(401).json({ message: 'Access token must be a string'});
+  }
+  const id = tokenToId(accessToken)
+  if (!id) {
+    return res.status(401).json({ message: 'error while verifying access token'});
+  }
+  try {
+    const user = await User.findById(id)
+    const isAdministrator = user?.role === 'administrator';
+    if (!isAdministrator) {
+      return res.status(401).json({ message: 'User is not an administrator'});
+    }
+    return res.status(200).json({ message: 'User is an administrator'});
+  } catch (e) {
+    console.error('error while querying for user', e)
+    return res.status(401).json({ message: 'error while querying for user', error: e });
+  }
+}
 export const refreshTokenF = (req: Request, res: Response) => {
   try {
     const refreshToken = req.body.refreshToken;
