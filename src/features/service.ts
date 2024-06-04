@@ -40,8 +40,12 @@ export const serviceUploadS = async (req: Request, res: Response) => {
 }
 
 export const showServiceS = async (req: Request, res: Response) => {
-  const services = await Service.find();
-  return res.status(200).json({ message: 'this is the service', services });
+  try {
+    const services = await Service.find().sort({ createdAt: -1 });
+    return res.status(200).json({ message: 'this is the service', services });
+  } catch (error) {
+    console.error('Could not find the service at service.ts', error);
+  }
 }
 
 export const updateServiceS = async (req: Request, res: Response) => {

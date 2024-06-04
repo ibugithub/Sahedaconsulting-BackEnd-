@@ -15,7 +15,14 @@ const serviceShema = new mongoose.Schema({
   },
   image: {
     type: "string"
+  },
+  skills : [String],
+  proposalsCount : {
+    type: "number",
+    default: 0
   }
-})
+}, 
+{timestamps: true}
+);
 
 export const Service = mongoose.model('Service', serviceShema)
