@@ -10,7 +10,7 @@ import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
 import { UserInterface } from './interface';
 
 
-export const registerF = async(req: Request, res: Response) => {
+export const registerF = async (req: Request, res: Response) => {
   try {
     const {
       firstName,
@@ -46,7 +46,7 @@ export const registerF = async(req: Request, res: Response) => {
   }
 }
 
-export const loginF = async (req : Request, res : Response) => {
+export const loginF = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email })
@@ -67,23 +67,44 @@ export const loginF = async (req : Request, res : Response) => {
   }
 };
 
-export const isAdministratorF = async(req: Request, res: Response) => {
+export const isAuthenticatedF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') { 
+  if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string'});
+    return res.status(401).json({ message: 'Access token must be a string' });
   }
   const id = tokenToId(accessToken)
   if (!id) {
-    return res.status(401).json({ message: 'error while verifying access token'});
+    return res.status(401).json({ message: 'error while verifying access token' });
+  }
+  try {
+    const user = await User.findById(id)
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
+    }
+    return res.status(200).json({ message: 'User is authenticated' });
+  } catch (e) {
+    console.error('error while querying for user', e)
+    return res.status(401).json({ message: 'error while querying for user', error: e });
+  }
+}
+export const isAdministratorF = async (req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken
+  if (typeof accessToken !== 'string') {
+    console.error('Access token must be a string at user.ts file');
+    return res.status(401).json({ message: 'Access token must be a string' });
+  }
+  const id = tokenToId(accessToken)
+  if (!id) {
+    return res.status(401).json({ message: 'error while verifying access token' });
   }
   try {
     const user = await User.findById(id)
     const isAdministrator = user?.role === 'administrator';
     if (!isAdministrator) {
-      return res.status(401).json({ message: 'User is not an administrator'});
+      return res.status(401).json({ message: 'User is not an administrator' });
     }
-    return res.status(200).json({ message: 'User is an administrator'});
+    return res.status(200).json({ message: 'User is an administrator' });
   } catch (e) {
     console.error('error while querying for user', e)
     return res.status(401).json({ message: 'error while querying for user', error: e });
@@ -113,17 +134,17 @@ const tokenToId = (token: string) => {
 
 export const sendProfileDataF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') { 
+  if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string'});
+    return res.status(401).json({ message: 'Access token must be a string' });
   }
   const id = tokenToId(accessToken)
   if (!id) {
-    return res.status(401).json({ message: 'error while verifying access token'});
+    return res.status(401).json({ message: 'error while verifying access token' });
   }
   try {
     const user = await User.findById(id)
-    const data = { 'firstName' : user?.firstName, 'lastName' : user?.lastName, 'email': user?.email, 'image': user?.image }
+    const data = { 'firstName': user?.firstName, 'lastName': user?.lastName, 'email': user?.email, 'image': user?.image }
     return res.status(200).json({ message: 'successfully sent the profile data', userInfo: data });
   } catch (e) {
     console.error('error while querying for user', e)
@@ -133,13 +154,13 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
 
 export const setImageF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') { 
+  if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string'});
+    return res.status(401).json({ message: 'Access token must be a string' });
   }
   const id = tokenToId(accessToken)
   if (!id) {
-    return res.status(401).json({ message: 'error while verifying access token'});
+    return res.status(401).json({ message: 'error while verifying access token' });
   }
   const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
   const options = {
@@ -155,7 +176,7 @@ export const setImageF = async (req: Request, res: Response) => {
     }
     user.image = results.public_id
     await user.save();
-    return res.status(200).json({ message: 'Image has been uploaded successfully', imgPath: results.public_id})
+    return res.status(200).json({ message: 'Image has been uploaded successfully', imgPath: results.public_id })
   } catch (err) {
     console.error("Error while uploading image on cloudinary at user.ts", err);
   }
@@ -174,21 +195,21 @@ export const setImageF = async (req: Request, res: Response) => {
 export const saveUserDataF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
   const userData = req.body
-  if (typeof accessToken !== 'string') { 
+  if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string'});
+    return res.status(401).json({ message: 'Access token must be a string' });
   }
   const id = tokenToId(accessToken)
   if (!id) {
-    return res.status(401).json({ message: 'error while verifying access token'});
+    return res.status(401).json({ message: 'error while verifying access token' });
   }
   const user = await User.findById(id);
   if (!user) {
     console.error('Could not find user at user.ts');
-    return res.status(401).json({message: 'user not found'});
+    return res.status(401).json({ message: 'user not found' });
   }
   user.firstName = userData.first_name
   user.lastName = userData.last_name
   await user.save();
-  return res.status(200).json({ message: "User data has been updated successfully."})
+  return res.status(200).json({ message: "User data has been updated successfully." })
 }

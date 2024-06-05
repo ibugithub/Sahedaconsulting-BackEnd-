@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { clearCookie } from '../Utils/clearCookie';
-import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF, isAdministratorF} from '../features/users';
+import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF,isAuthenticatedF, isAdministratorF} from '../features/users';
 
 
 export const register = async (req: Request, res: Response) => {
@@ -13,6 +13,10 @@ export const login = async (req: Request, res: Response) => {
 
 export const logout = (req: Request, res: Response) => {
   clearCookie(res, 'refreshToken');
+}
+
+export const isAuthenticatedC = (req: Request, res: Response) => {
+  isAuthenticatedF(req, res);
 }
 
 export const isAdministratorC = (req: Request, res: Response) => {
