@@ -68,8 +68,6 @@ export const loginF = async (req: Request, res: Response) => {
   }
 };
 
-
-
 export const isAuthenticatedF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
   if (typeof accessToken !== 'string') {
@@ -78,7 +76,6 @@ export const isAuthenticatedF = async (req: Request, res: Response) => {
   }
   try {
     const user = await isAuthenticated(accessToken);
-    console.log('the user is ', user);
     return res.status(200).json({ message: 'User is authenticated', user });
   } catch (error) {
     console.error('Authentication error at users.ts:', error);
