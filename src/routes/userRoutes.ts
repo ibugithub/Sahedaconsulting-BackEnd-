@@ -11,8 +11,8 @@ router.post('/refresh', refreshToken);
 router.post('/profile', sendProfileDataC);
 router.post('/setImage', upload.single('image'), setImageC);
 router.post('/saveUserData', saveUserDataC);
-router.post('/isAuthenticated', isAuthenticatedC);
-router.post('/isAdministrator', isAdministratorC);
+router.get('/isAuthenticated', isAuthenticatedC);
+router.get('/isAdministrator', isAdministratorC);
 
 
 export default router;

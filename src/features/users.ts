@@ -6,8 +6,9 @@ import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import bcrypt from 'bcryptjs';
 import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
-import {isAdministrator, isAuthenticated} from '../Utils/auth';
+import { isAdministrator, isAuthenticated } from '../Utils/auth';
 import { UserInterface } from './interface';
+import { Buyer, Freelancer } from '../models/User';
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
 
@@ -40,6 +41,30 @@ export const registerF = async (req: Request, res: Response) => {
       role: role
     });
     await newUser.save();
+    if (role === 'buyer') {
+      const newBuyer = new Buyer({
+        user: newUser._id,
+        address: '',
+        phone: '',
+        companyName: '',
+        companyDescription: '',
+      })
+      await newBuyer.save();
+    }
+    if (role === 'freelancer') { 
+      const newFreelancer = new Freelancer({
+        user: newUser._id,
+        skills: [],
+        address: '',
+        phone: '',
+        profileTitle: '',
+        overview: '',
+        employmentHistory: [],
+        proposals: [],
+        hireCount: 0
+      })
+      await newFreelancer.save();
+    }
     res.status(201).json({ message: "User has been registered successfully" });
   } catch (error) {
     console.error('Error while registering the user', error);
@@ -81,7 +106,6 @@ export const isAuthenticatedF = async (req: Request, res: Response) => {
     console.error('Authentication error at users.ts:', error);
     return res.status(401).json({ message: 'Error while authenticating user at users.ts', error });
   }
-
 }
 
 export const isAdministratorF = async (req: Request, res: Response) => {
@@ -97,7 +121,7 @@ export const isAdministratorF = async (req: Request, res: Response) => {
     return res.status(200).json({ message: 'User is an administrator', user });
   } catch (e) {
     console.error('error while checking if user is an administrator at users.ts', e);
-    return res.status(401).json({ message: 'Error while checking admin user at users.ts', e});
+    return res.status(401).json({ message: 'Error while checking admin user at users.ts', e });
   }
 }
 export const refreshTokenF = (req: Request, res: Response) => {

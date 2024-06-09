@@ -17,10 +17,14 @@ const serviceShema = new mongoose.Schema({
     type: "string"
   },
   skills : [String],
+  proposals : [{type: mongoose.Schema.Types.ObjectId, ref: 'Proposals'}],  
+  appliedFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
   proposalsCount : {
     type: "number",
     default: 0
-  }
+  },
+  hiredFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
+  hiredCount : {type: "number", default: 0}
 }, 
 {timestamps: true}
 );

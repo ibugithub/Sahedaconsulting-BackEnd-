@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
  email: { type: String, required: true, unique: true },
  password: { type: String, required: true, selected: false},
  image: {type: String},
- role: {type: String, enum: ['buyer', 'freelancer', 'administrator'], default:'buyer'},
+ role: {type: String, enum: ['buyer', 'freelancer', 'administrator']},
 });
 
 userSchema.methods.getFullName = function() {
@@ -40,6 +40,8 @@ const freelancerSchema = new mongoose.Schema({
   profileTitle: { type: String, required: true },
   overview: {type: String, required: true},
   employmentHistory: [{ jobTitle: String, company: String, startDate: Date, endDate: Date }],
+  proposals : {type: [mongoose.Schema.Types.ObjectId], ref: 'Proposals', default: []},
+  hireCount: {type: Number, default: 0}
 });
 
 export const Freelancer = mongoose.model('Freelancer', freelancerSchema)
