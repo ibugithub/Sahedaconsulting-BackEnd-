@@ -21,11 +21,10 @@ const buyerSchema = new mongoose.Schema({
   address : {type : String},
   phone : {type: String},
   companyName: {
-    type: String, required: true
+    type: String
   },
   companyDescription: {
     type: String,
-    required: true
   },
 });
 
@@ -34,10 +33,10 @@ export const Buyer = mongoose.model('Buyer', buyerSchema)
 
 const freelancerSchema = new mongoose.Schema({
   user : {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
-  skills : {type: [String], required: true},
+  skills : {type: [String]},
   address : {type : String},
   phone : {type: String},
-  profileTitle: { type: String, required: true },
+  profileTitle: { type: String},
   overview: {type: String, required: true},
   employmentHistory: [{ jobTitle: String, company: String, startDate: Date, endDate: Date }],
   proposals : {type: [mongoose.Schema.Types.ObjectId], ref: 'Proposals', default: []},

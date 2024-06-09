@@ -40,31 +40,38 @@ export const registerF = async (req: Request, res: Response) => {
       password: hasedPassword,
       role: role
     });
+
+    try {
+      if (role === 'buyer') {
+        const newBuyer = new Buyer({
+          user: newUser._id,
+          address: '',
+          phone: '',
+          companyName: '',
+          companyDescription: '',
+        })
+        await newBuyer.save();
+      }
+      if (role === 'freelancer') {
+        const newFreelancer = new Freelancer({
+          user: newUser._id,
+          skills: [],
+          address: '',
+          phone: '',
+          profileTitle: '',
+          overview: '',
+          employmentHistory: [],
+          proposals: [],
+          hireCount: 0
+        })
+        await newFreelancer.save();
+      }
+    } catch (error) {
+      console.error('error while creating Buyer or Freelancer account', error)
+      return res.status(401).json({ message: 'Error while creating Buyer or Freelancer account', error: error })
+    }
     await newUser.save();
-    if (role === 'buyer') {
-      const newBuyer = new Buyer({
-        user: newUser._id,
-        address: '',
-        phone: '',
-        companyName: '',
-        companyDescription: '',
-      })
-      await newBuyer.save();
-    }
-    if (role === 'freelancer') { 
-      const newFreelancer = new Freelancer({
-        user: newUser._id,
-        skills: [],
-        address: '',
-        phone: '',
-        profileTitle: '',
-        overview: '',
-        employmentHistory: [],
-        proposals: [],
-        hireCount: 0
-      })
-      await newFreelancer.save();
-    }
+
     res.status(201).json({ message: "User has been registered successfully" });
   } catch (error) {
     console.error('Error while registering the user', error);
