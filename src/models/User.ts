@@ -37,7 +37,7 @@ const freelancerSchema = new mongoose.Schema({
   address : {type : String},
   phone : {type: String},
   profileTitle: { type: String},
-  overview: {type: String, required: true},
+  overview: {type: String},
   employmentHistory: [{ jobTitle: String, company: String, startDate: Date, endDate: Date }],
   proposals : {type: [mongoose.Schema.Types.ObjectId], ref: 'Proposals', default: []},
   hireCount: {type: Number, default: 0}
