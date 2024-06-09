@@ -1,6 +1,10 @@
 import {Request, Response} from 'express'; 
-import { showWorkFeature } from '../features/findWorkFeature';
+import { showWorksFeature, showWorkFeature } from '../features/findWorkFeature';
 
-export const showWorkController = (req: Request, res: Response) => {
+export const showWorksController = (req: Request, res: Response) => {
+  showWorksFeature(req, res);
+}
+
+export const showSingleWorkController = (req: Request, res: Response) => {
   showWorkFeature(req, res);
 }

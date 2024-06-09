@@ -1,8 +1,9 @@
 import express from "express";
-import { showWorkController } from "../controllers/findWorkController";
+import { showWorksController, showSingleWorkController } from "../controllers/findWorkController";
 
 const router = express.Router();
 
-router.get('/showWork', showWorkController);
+router.get('/showWorks', showWorksController);
+router.get('/showsingleWork/:id', showSingleWorkController);
 
 export default router;
