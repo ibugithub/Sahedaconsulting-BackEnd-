@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { Service } from "../models/ServiceModel";
 import { Proposals } from "../models/ProposalsModel";
-import { User, Freelancer, } from "../models/User";
+import { Freelancer, } from "../models/User";
 
 export const showWorksFeature = async (req: Request, res: Response) => {
   try {
@@ -28,17 +28,32 @@ export const addProposalF = async (req: Request, res: Response) => {
   try {
     const freelancer = await Freelancer.findOne({ 'user': proposalData.userId }).populate('user')
     const service = await Service.findById(proposalData.service)
+    if (!freelancer || !service) {
+      console.error('Freelancer or service not found');
+      return res.status(404).json({ message: 'Freelancer or service not found' });
+    }
+
+    console.log('Freelancer ID:', freelancer._id);
+    console.log('Service ID:', service._id);
+
+    const existingProposal = await Proposals.findOne ({
+      freelancer : freelancer._id,
+      service : service._id
+    });
+
+    console.log('the existingProposal is', existingProposal);
+    if (existingProposal) {
+      console.error('You already have a proposal for this service');
+      return res.status(400).json({ message: 'You already have a proposal for this service' });
+    }
+
     const newProposal = new Proposals({
-      freelancer: freelancer?.user,
+      freelancer: freelancer,
       service: proposalData.service,
       coverLetter: proposalData.coverLetter,
       price: proposalData.price,
     })
     console.log('the newProposals is', newProposal);
-    if (!freelancer || !service) {
-      console.error('Freelancer or service not found');
-      return res.status(404).json({ message: 'Freelancer or service not found' });
-    }
     freelancer.proposals.push(newProposal._id);
     service.proposals.push(newProposal._id);
     service.proposalsCount = (service.proposalsCount ?? 0) + 1;
