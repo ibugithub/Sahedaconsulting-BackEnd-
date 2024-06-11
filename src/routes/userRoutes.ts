@@ -1,6 +1,6 @@
 import express from 'express';
 import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC} from '../controllers/userController';
-import { upload } from './admin';
+import { upload } from './adminRoutes';
 
 
 const router = express.Router();

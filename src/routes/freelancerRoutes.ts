@@ -1,5 +1,5 @@
 import express from "express";
-import { showWorksController, showSingleWorkController, addProposalC, isAlreadyAppliedC } from "../controllers/findWorkController";
+import { showWorksController, showSingleWorkController, addProposalC, isAlreadyAppliedC } from "../controllers/freelancerController";
 
 const router = express.Router();
 

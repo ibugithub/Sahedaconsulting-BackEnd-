@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { clearCookie } from '../Utils/clearCookie';
-import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF,isAuthenticatedF, isAdministratorF} from '../features/users';
+import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF,isAuthenticatedF, isAdministratorF} from '../features/usersFeautres';
 
 
 export const register = async (req: Request, res: Response) => {

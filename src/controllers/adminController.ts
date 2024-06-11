@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
-import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, trashServiceF, showHiredServiceF, showTrashedServiceF } from "../features/admin"
-import { sendMailF } from '../features/sendMail';
+import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, trashServiceF, showHiredServiceF, showTrashedServiceF } from "../features/adminFeatures"
 import { isAdministrator } from '../Utils/auth';
 
 export const serviceUploadC = async(req: Request, res: Response) => {
@@ -79,8 +78,4 @@ export const showTrashedServiceC = async(req: Request, res: Response) =>{
     console.error('error while checking if user is an administrator at users.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at users.ts', err});
   }
-}
-
-export const sendMailC = (req: Request, res: Response) => {
-  sendMailF(req, res);
 }

@@ -1,5 +1,5 @@
 import {Request, Response} from 'express'; 
-import { showWorksFeature, showWorkFeature, addProposalF, isAppliedF} from '../features/findWorkFeature';
+import { showWorksFeature, showWorkFeature, addProposalF, isAppliedF} from '../features/freelancerFeatures';
 
 export const showWorksController = (req: Request, res: Response) => {
   showWorksFeature(req, res);
