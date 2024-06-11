@@ -1,6 +1,6 @@
 import express from 'express';
 import userRoutes  from './routes/userRoutes';
-import servicetRoutes from './routes/service';
+import adminRoutes from './routes/admin';
 import findWorkRoutes from './routes/findWorkRoutes'; 
 import loggerMiddleWare from './middlewares/loggerMiddleware';
 import { connectDb } from '../config/database';
@@ -36,7 +36,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/users', userRoutes);
-app.use('/api/service', servicetRoutes);
+app.use('/api/service', adminRoutes);
 app.use('/api/findWork', findWorkRoutes);
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);

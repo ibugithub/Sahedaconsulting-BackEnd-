@@ -25,7 +25,7 @@ const serviceShema = new mongoose.Schema({
   },
   hiredFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
   hiredCount : {type: "number", default: 0},
-  isHired : {type: "boolean", default: false},
+  isHiringClosed : {type: "boolean", default: false},
   isTrashed : {type: "boolean", default: false}
 }, 
 {timestamps: true}

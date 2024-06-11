@@ -138,3 +138,21 @@ export const trashServiceF = async(req: Request, res: Response) => {
     return res.status(400).json({ error: 'Error while trashing service at service.ts' });
   }
 }
+
+export const showTrashedServiceF = async(req: Request, res: Response) => {
+  try {
+    const services = await Service.find({isTrashed: true}).sort({ createdAt: -1 });
+    return res.status(200).json({ message: 'this is the service', services });
+  } catch (error) {
+    console.error('Could not find the service at service.ts', error);
+  }
+}
+
+export const showHiredServiceF = async(req: Request, res: Response) => {
+  try {
+    const services = await Service.find({isHiringClosed: true}).sort({ createdAt: -1 });
+    return res.status(200).json({ message: 'this is the service', services });
+  } catch (error) {
+    console.error('Could not find the service at service.ts', error);
+  }
+}
