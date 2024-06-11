@@ -41,7 +41,7 @@ export const serviceUploadS = async (req: Request, res: Response) => {
 
 export const showServiceS = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find().sort({ createdAt: -1 });
+    const services = await Service.find({isTrashed: {$ne: true}}).sort({ createdAt: -1 });
     return res.status(200).json({ message: 'this is the service', services });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
@@ -110,7 +110,7 @@ export const deleteServiceS = async (req: Request, res: Response) => {
     const image = deletedService.image;
     if (image) {
       try {
-        const results = cloudinary.uploader.destroy(image);
+        cloudinary.uploader.destroy(image);
       } catch (err) {
         console.error("Error destroing image from cloudinary at service.ts file", err);
       }
@@ -119,5 +119,22 @@ export const deleteServiceS = async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Error deleting service", error);
     res.status(400).json({ error: 'Internal server error' });
+  }
+}
+
+export const trashServiceF = async(req: Request, res: Response) => {
+  try {
+    const serviceId = req.params.id;
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+    service.isTrashed = true;
+    await service.save();
+    return res.status(200).json({ message: 'Service trashed successfully' });
+
+  } catch (error) {
+    console.error("Error while trashing service at service.ts", error);
+    return res.status(400).json({ error: 'Error while trashing service at service.ts' });
   }
 }

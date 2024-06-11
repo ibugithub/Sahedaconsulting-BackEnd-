@@ -1,6 +1,6 @@
 import express, {Request} from "express";
 import multer from "multer";
-import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, sendMailC } from "../controllers/service";
+import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, trashServiceC, sendMailC } from "../controllers/service";
 
 const router = express.Router();
 
@@ -25,5 +25,6 @@ router.post('/upload', upload.single('image'), serviceUploadC);
 router.get('/showServices', showServiceC);
 router.put('/edit/:id', upload.single('imgFile'), updateServiceC);
 router.delete('/del/:id', deleteServiceC);
+router.get('/trash/:id', trashServiceC);
 router.post('/sendMail', sendMailC);
 export default router;
