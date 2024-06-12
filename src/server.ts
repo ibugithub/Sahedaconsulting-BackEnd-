@@ -2,6 +2,7 @@ import express from 'express';
 import userRoutes  from './routes/userRoutes';
 import adminRoutes from './routes/adminRoutes';
 import freelancerRoutes from './routes/freelancerRoutes'; 
+import buyerRoutes from './routes/buyerRoutes';
 import loggerMiddleWare from './middlewares/loggerMiddleware';
 import { connectDb } from '../config/database';
 import cookieParser from 'cookie-parser';
@@ -38,6 +39,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/users', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/freelancer', freelancerRoutes);
+app.use('/api/buyer', buyerRoutes);
 process.on('uncaughtException', (err) => {
   console.error('Uncaught exception:', err);
 })
