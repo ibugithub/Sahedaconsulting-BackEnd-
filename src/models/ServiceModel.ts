@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
+import { ServiceInterface } from "../interface";
 
-const serviceShema = new mongoose.Schema({
+const serviceShema = new mongoose.Schema<ServiceInterface>({
   title: {
     type: "string",
     required: true
@@ -26,7 +27,7 @@ const serviceShema = new mongoose.Schema({
   hiredFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
   hiredCount : {type: "number", default: 0},
   isHiringClosed : {type: "boolean", default: false},
-  isTrashed : {type: "boolean", default: false}
+  isCompleted : {type: "boolean", default: false}
 }, 
 {timestamps: true}
 );

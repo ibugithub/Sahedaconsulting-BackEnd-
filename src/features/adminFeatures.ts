@@ -41,7 +41,7 @@ export const serviceUploadS = async (req: Request, res: Response) => {
 
 export const showServiceS = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({isTrashed: {$ne: true}}).sort({ createdAt: -1 });
+    const services = await Service.find({ isTrashed: { $ne: true } }).sort({ createdAt: -1 });
     return res.status(200).json({ message: 'this is the service', services });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
@@ -122,36 +122,76 @@ export const deleteServiceS = async (req: Request, res: Response) => {
   }
 }
 
-export const trashServiceF = async(req: Request, res: Response) => {
+export const markCompletedF = async (req: Request, res: Response) => {
   try {
     const serviceId = req.params.id;
     const service = await Service.findById(serviceId);
     if (!service) {
       return res.status(404).json({ error: 'Service not found' });
     }
-    service.isTrashed = true;
+    service.isCompleted = true;
     await service.save();
     return res.status(200).json({ message: 'Service trashed successfully' });
 
   } catch (error) {
-    console.error("Error while trashing service at service.ts", error);
-    return res.status(400).json({ error: 'Error while trashing service at service.ts' });
+    console.error("Error while trashing service at adminFeatures.ts", error);
+    return res.status(400).json({ error: 'Error while trashing service at adminFeatures.ts' });
   }
 }
 
-export const showTrashedServiceF = async(req: Request, res: Response) => {
+export const markHiredF = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({isTrashed: true}).sort({ createdAt: -1 });
+    const serviceId = req.params.id;
+    const service = await Service.findById(serviceId);
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+    service.isHiringClosed = true;
+    await service.save();
+    return res.status(200).json({ message: 'Service unTrashed successfully' });
+  } catch (error) {
+    console.error("Error while unTrashing service at adminFeatures.ts", error);
+    return res.status(400).json({ error: 'Error while unTrashing service at adminFeatures.ts' });
+  }
+}
+
+export const showCompletedServiceF = async (req: Request, res: Response) => {
+  try {
+    const services = await Service.find({ isCompleted: true }).sort({ createdAt: -1 });
     return res.status(200).json({ message: 'this is the service', services });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
   }
 }
 
-export const showHiredServiceF = async(req: Request, res: Response) => {
+export const showHiredServiceF = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({isHiringClosed: true}).sort({ createdAt: -1 });
+    const services = await Service.find({ isHiringClosed: true }).sort({ createdAt: -1 });
     return res.status(200).json({ message: 'this is the service', services });
+  } catch (error) {
+    console.error('Could not find the service at service.ts', error);
+  }
+}
+
+export const showServiceDetailsF = async (req: Request, res: Response) => {
+  try {
+    const serviceId = req.params.id;
+    const service = await Service.findById(serviceId).populate({
+      path: "appliedFreelancers",
+      populate: {
+        path: 'user',
+        model: 'User'
+      }
+    });
+    if (!service) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    service.appliedFreelancers.forEach(freelancer => {
+      console.log('Freelancer user first name is', freelancer.user.firstName);
+    });
+
+    return res.status(200).json({ message: 'this is the service', service });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
   }

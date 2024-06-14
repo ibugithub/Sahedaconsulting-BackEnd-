@@ -7,7 +7,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import bcrypt from 'bcryptjs';
 import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
 import { isAdministrator, isAuthenticated } from '../Utils/auth';
-import { UserInterface } from './interface';
+import { UserInterface } from '../interface';
 import { Buyer, Freelancer } from '../models/User';
 const JWT_SECRET = process.env.JWT_SECRET || "";
 

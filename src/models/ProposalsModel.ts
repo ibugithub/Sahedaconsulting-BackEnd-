@@ -1,4 +1,6 @@
 import mongoose from "mongoose"; 
+import { ProposalInterface } from "../interface";
+import { Timestamp } from "mongodb";
 
 const Proposalschema = new mongoose.Schema({
   freelancer: {
@@ -24,6 +26,7 @@ const Proposalschema = new mongoose.Schema({
     enum: ['pending', 'accepted', 'rejected'],
     default: 'pending'
   }
-})
+},
+{timestamps: true})
 
 export const Proposals = mongoose.model('Proposals', Proposalschema)

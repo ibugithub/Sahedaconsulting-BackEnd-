@@ -1,6 +1,7 @@
 import  mongoose from 'mongoose' 
+import { UserInterface, FreelancerInterface } from '../interface';
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema<UserInterface>({
  firstName: { type: String, required: true },
  lastName: { type: String, required: true},
  email: { type: String, required: true, unique: true },
@@ -31,7 +32,7 @@ const buyerSchema = new mongoose.Schema({
 export const Buyer = mongoose.model('Buyer', buyerSchema)
 
 
-const freelancerSchema = new mongoose.Schema({
+const freelancerSchema = new mongoose.Schema<FreelancerInterface>({
   user : {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   skills : {type: [String]},
   address : {type : String},
@@ -39,7 +40,7 @@ const freelancerSchema = new mongoose.Schema({
   profileTitle: { type: String},
   overview: {type: String},
   employmentHistory: [{ jobTitle: String, company: String, startDate: Date, endDate: Date }],
-  proposals : {type: [mongoose.Schema.Types.ObjectId], ref: 'Proposals', default: []},
+  proposals : [{ type: mongoose.Schema.Types.ObjectId, ref: 'Proposals' }],
   hireCount: {type: Number, default: 0}
 });
 

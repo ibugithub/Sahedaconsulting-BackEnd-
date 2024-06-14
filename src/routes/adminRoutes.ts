@@ -1,6 +1,6 @@
 import express, {Request} from "express";
 import multer from "multer";
-import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, trashServiceC, showHiredServiceC, showTrashedServiceC} from "../controllers/adminController";
+import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, showHiredServiceC, showCompletedServiceC, markCompletedC, markHiredC, showServiceDetailsC} from "../controllers/adminController";
 
 const router = express.Router();
 
@@ -25,7 +25,9 @@ router.post('/upload', upload.single('image'), serviceUploadC);
 router.get('/showServices', showServiceC);
 router.put('/edit/:id', upload.single('imgFile'), updateServiceC);
 router.delete('/del/:id', deleteServiceC);
-router.get('/trash/:id', trashServiceC);
+router.get('/markHired/:id', markHiredC);
+router.get('/markCompleted/:id', markCompletedC);
 router.get('/hiredServices', showHiredServiceC);
-router.get('/trashedServices', showTrashedServiceC);
+router.get('/completedServices', showCompletedServiceC);
+router.get('/serviceDetails/:id', showServiceDetailsC);
 export default router;
