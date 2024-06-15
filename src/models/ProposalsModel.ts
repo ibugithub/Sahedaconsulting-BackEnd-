@@ -1,8 +1,7 @@
 import mongoose from "mongoose"; 
 import { ProposalInterface } from "../interface";
-import { Timestamp } from "mongodb";
 
-const Proposalschema = new mongoose.Schema({
+const Proposalschema = new mongoose.Schema<ProposalInterface>({
   freelancer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Freelancer',

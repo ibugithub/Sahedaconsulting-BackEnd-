@@ -1,20 +1,17 @@
-import { ObjectId } from "mongodb";
+import {Types} from "mongoose";
 
 export interface UserInterface {
-  _id: ObjectId;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   cPassword: string;
-  image: string;
+  image?: string;
   role: 'buyer' | 'freelancer' | 'administrator';
-  getFullName(): string;
 }
 
 export interface FreelancerInterface {
-  _id: ObjectId;
-  user: UserInterface;
+  user: Types.ObjectId;
   skills: string[];
   address?: string;
   phone?: string;
@@ -24,35 +21,31 @@ export interface FreelancerInterface {
     jobTitle: string;
     company: string;
     startDate: Date;
-    endDate: Date;
+    endDate?: Date;
   }[];
-  proposals: ProposalInterface[];
-  hireCount: number;
+  proposals: Types.ObjectId[];
+  hireCount?: number;
 }
 
-// Service Interface
 export interface ServiceInterface {
-  _id: ObjectId;
   title: string;
   description: string;
   price: number;
   image?: string;
   skills: string[];
-  proposals: ProposalInterface[];
-  appliedFreelancers: FreelancerInterface[];
-  proposalsCount: number;
-  hiredFreelancers: FreelancerInterface[];
-  hiredCount: number;
-  isHiringClosed: boolean;
-  isCompleted: boolean;
+  proposals: Types.ObjectId[];
+  appliedFreelancers: Types.ObjectId[];
+  proposalsCount?: number;
+  hiredFreelancers: Types.ObjectId[];
+  hiredCount?: number;
+  isHiringClosed?: boolean;
+  isCompleted?: boolean;
 }
 
 export interface ProposalInterface {
-  _id: ObjectId;
-  freelancer : FreelancerInterface;
-  service: ServiceInterface;
-  price: number;
+  freelancer: Types.ObjectId;
+  service: Types.ObjectId;
   coverLetter: string;
-  createdAt: Date;
-  updatedAt: Date;
+  price: number;
+  status?: 'pending' | 'accepted' | 'rejected';
 }

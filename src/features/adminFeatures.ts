@@ -186,11 +186,6 @@ export const showServiceDetailsF = async (req: Request, res: Response) => {
     if (!service) {
       return res.status(404).json({ error: 'Service not found' });
     }
-
-    service.appliedFreelancers.forEach(freelancer => {
-      console.log('Freelancer user first name is', freelancer.user.firstName);
-    });
-
     return res.status(200).json({ message: 'this is the service', service });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
