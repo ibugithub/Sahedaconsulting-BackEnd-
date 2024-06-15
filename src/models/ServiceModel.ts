@@ -27,6 +27,7 @@ const serviceShema = new mongoose.Schema<ServiceInterface>({
   hiredFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
   hiredCount : {type: "number", default: 0},
   isHiringClosed : {type: "boolean", default: false},
+  requiredFreelancers: {type: "number", default:1},
   isCompleted : {type: "boolean", default: false}
 }, 
 {timestamps: true}

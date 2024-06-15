@@ -121,10 +121,8 @@ export const isAdministratorF = async (req: Request, res: Response) => {
     console.error('Access token must be a string at user.ts file');
     return res.status(401).json({ message: 'Access token must be a string' });
   }
-
   try {
     const user = await isAdministrator(accessToken);
-    console.log('the user is ', user);
     return res.status(200).json({ message: 'User is an administrator', user });
   } catch (e) {
     console.error('error while checking if user is an administrator at users.ts', e);

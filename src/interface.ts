@@ -40,6 +40,7 @@ export interface ServiceInterface {
   hiredCount?: number;
   isHiringClosed?: boolean;
   isCompleted?: boolean;
+  requiredFreelancers: number;
 }
 
 export interface ProposalInterface {

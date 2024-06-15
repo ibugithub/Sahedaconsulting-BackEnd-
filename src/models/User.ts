@@ -16,7 +16,6 @@ userSchema.methods.getFullName = function() {
 
 export const User = mongoose.model('User', userSchema);
 
-
 const buyerSchema = new mongoose.Schema({
   user : {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
   address : {type : String},
@@ -30,7 +29,6 @@ const buyerSchema = new mongoose.Schema({
 });
 
 export const Buyer = mongoose.model('Buyer', buyerSchema)
-
 
 const freelancerSchema = new mongoose.Schema<FreelancerInterface>({
   user : {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF} from "../features/adminFeatures"
+import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF} from "../features/adminFeatures"
 import { isAdministrator } from '../Utils/auth';
 import { Proposals } from '../models/ProposalsModel';
 
@@ -97,11 +97,22 @@ export const showCompletedServiceC = async (req: Request, res: Response) => {
   }
 }
 
-export const showServiceDetailsC = async(req: Request, res: Response) => {
+export const showServiceDetailsC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   try {
     await isAdministrator(accessToken);
     showServiceDetailsF(req, res);
+  } catch (err) {
+    console.error('error while checking if user is an administrator at users.ts', err);
+    return res.status(401).json({ message: 'Error while checking admin user at users.ts', err });
+  }
+}
+
+export const hireFreelancerC = async (req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken as string;
+  try {
+    await isAdministrator(accessToken);
+    hireFreelancerF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at users.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at users.ts', err });

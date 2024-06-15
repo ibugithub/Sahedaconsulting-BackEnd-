@@ -1,5 +1,7 @@
 import { Request, Response } from "express"
 import { Service } from "../models/ServiceModel"
+import { Proposals } from "../models/ProposalsModel";
+import { Freelancer } from "../models/User";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -190,4 +192,27 @@ export const showServiceDetailsF = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
   }
+}
+
+export const hireFreelancerF = async (req: Request, res: Response) => {
+  const { freelancer, service }  = req.body;
+  const proposal = await Proposals.findOne({ 'service': service, 'freelancer': freelancer });
+  if (!proposal) {
+    console.error('Could not find the proposal at adminFeatures.ts');
+    return res.status(404).json({ error: 'Proposal not found' });
+  }
+  proposal.status = 'accepted';
+  await proposal.save();
+  const newService = await Service.findById(service);
+  if (!newService) {
+    console.error('Could not find the service at adminFeatures.ts');
+    return res.status(404).json({ error: 'Service not found' });
+  }
+  newService.hiredFreelancers.push(freelancer._id);
+  newService.hiredCount = (newService.hiredCount ?? 0 )+ 1;
+  if (newService.hiredCount === newService.requiredFreelancers) {
+    newService.isHiringClosed = true;
+  }
+  await newService.save();
+  res.status(200).json({ message: 'Hired successfully' });
 }
