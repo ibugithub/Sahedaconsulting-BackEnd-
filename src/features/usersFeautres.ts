@@ -142,20 +142,49 @@ export const refreshTokenF = (req: Request, res: Response) => {
 }
 
 export const sendProfileDataF = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken
+  const accessToken = req.headers.accesstoken;
+  
   if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
     return res.status(401).json({ message: 'Access token must be a string' });
   }
+  
   try {
     const user = await isAuthenticated(accessToken);
-    const data = { 'firstName': user?.firstName, 'lastName': user?.lastName, 'email': user?.email, 'image': user?.image }
-    return res.status(200).json({ message: 'successfully sent the profile data', userInfo: data });
+    
+    if (!user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+    
+    // Fetch additional freelancer data
+    const freelancer = await Freelancer.findOne({ user: user._id }).populate('proposals');
+    
+    if (!freelancer) {
+      return res.status(404).json({ message: 'Freelancer profile not found' });
+    }
+
+    const data = {
+      id: freelancer._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      image: user.image,
+      skills: freelancer.skills,
+      address: freelancer.address,
+      phone: freelancer.phone,
+      profileTitle: freelancer.profileTitle,
+      overview: freelancer.overview,
+      employmentHistory: freelancer.employmentHistory,
+      proposals: freelancer.proposals.map(p => p._id), 
+      hireCount: freelancer.hireCount
+    };
+
+    return res.status(200).json({ message: 'Successfully sent the profile data', userInfo: data });
   } catch (e) {
-    console.error('error while authenticating user at users.ts', e)
-    return res.status(401).json({ message: 'error while authenticating user at users.ts', error: e });
+    console.error('Error while authenticating user at users.ts', e);
+    return res.status(401).json({ message: 'Error while authenticating user at users.ts', error: e });
   }
-}
+};
 
 export const setImageF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
@@ -212,7 +241,17 @@ export const saveUserDataF = async (req: Request, res: Response) => {
     }
     user.firstName = userData.first_name
     user.lastName = userData.last_name
+    const freelancer = await Freelancer.findById(userData.id)
+    if(!freelancer) {
+      return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
+    }
+    freelancer.profileTitle = userData.profileTitle
+    freelancer.overview = userData.overview
+    freelancer.phone = userData.phone
+    freelancer.address = userData.address
+    freelancer.skills = userData.skills
     await user.save();
+    await freelancer.save();
     return res.status(200).json({ message: "User data has been updated successfully." })
   } catch (e) {
     console.error('error while authenticating user at users.ts', e)
