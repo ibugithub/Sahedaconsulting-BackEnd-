@@ -1,7 +1,6 @@
 import { Request, Response } from "express"
 import { Service } from "../models/ServiceModel"
 import { Proposals } from "../models/ProposalsModel";
-import { Freelancer } from "../models/User";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 
@@ -20,11 +19,12 @@ export const serviceUploadS = async (req: Request, res: Response) => {
     if (imagePath) {
       results = await cloudinary.uploader.upload(imagePath, options);
     }
-    const { service, description, price } = req.body
+    const { service, description, price, requiredFreelancer } = req.body
     const newService = new Service({
       title: service,
       description: description,
       price: price,
+      requiredFreelancers: requiredFreelancer,
       image: results.public_id
     })
     await newService.save()
@@ -43,7 +43,7 @@ export const serviceUploadS = async (req: Request, res: Response) => {
 
 export const showServiceS = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({ isTrashed: { $ne: true } }).sort({ createdAt: -1 });
+    const services = await Service.find({ isHiringClosed: { $ne: true } }).sort({ createdAt: -1 });
     return res.status(200).json({ message: 'this is the service', services });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
@@ -179,11 +179,15 @@ export const showServiceDetailsF = async (req: Request, res: Response) => {
   try {
     const serviceId = req.params.id;
     const service = await Service.findById(serviceId).populate({
-      path: "appliedFreelancers",
+      path: "proposals",
       populate: {
-        path: 'user',
-        model: 'User'
-      }
+        path: 'freelancer',
+        model: 'Freelancer',
+        populate: {
+          path: 'user',
+          model: 'User',
+        }
+      },
     });
     if (!service) {
       return res.status(404).json({ error: 'Service not found' });
@@ -195,24 +199,34 @@ export const showServiceDetailsF = async (req: Request, res: Response) => {
 }
 
 export const hireFreelancerF = async (req: Request, res: Response) => {
-  const { freelancer, service }  = req.body;
-  const proposal = await Proposals.findOne({ 'service': service, 'freelancer': freelancer });
+  const { freelancerId, serviceId }  = req.body;
+  console.log('the feelancer is', freelancerId);
+  console.log('the service is', serviceId);
+  const proposal = await Proposals.findOne({ 'service': serviceId, 'freelancer': freelancerId });
   if (!proposal) {
     console.error('Could not find the proposal at adminFeatures.ts');
     return res.status(404).json({ error: 'Proposal not found' });
   }
+  if(proposal.status === 'accepted') {
+    return res.status(400).json({ error: 'Already hired' });
+  }
   proposal.status = 'accepted';
   await proposal.save();
-  const newService = await Service.findById(service);
+  const newService = await Service.findById(serviceId);
   if (!newService) {
     console.error('Could not find the service at adminFeatures.ts');
     return res.status(404).json({ error: 'Service not found' });
   }
-  newService.hiredFreelancers.push(freelancer._id);
+  newService.hiredFreelancers.push(freelancerId);
   newService.hiredCount = (newService.hiredCount ?? 0 )+ 1;
   if (newService.hiredCount === newService.requiredFreelancers) {
     newService.isHiringClosed = true;
   }
   await newService.save();
-  res.status(200).json({ message: 'Hired successfully' });
+  res.status(201).json({ message: 'Hired successfully' });
+}
+
+export const isHird = async (req: Request, res: Response) => {
+  const {userId, service} = req.body;
+  const proposal = await Proposals.findOne({ 'service': service, 'freelancer': userId });
 }

@@ -6,7 +6,7 @@ import { isAlreadyApplied } from "../Utils/proposals";
 
 export const showWorksFeature = async (req: Request, res: Response) => {
   try {
-    const services = await Service.find({isTrashed: {$ne: true}}).sort({ createdAt: -1 });
+    const services = await Service.find({ isHiringClosed: {$ne: true}}).sort({ createdAt: -1 });
     return res.status(200).json({ message: 'this is the service', services });
   } catch (error) {
     console.error('Could not find the service at service.ts', error);
