@@ -93,7 +93,6 @@ export const loginF = async (req: Request, res: Response) => {
     const accessToken = generateAccessToken({ userId: user.id, email: user.email });
     const refreshToken = generateRefreshToken({ userId: user.id, email: user.email });
     res.status(200).json({ message: "Login successful", name: user.firstName + user.lastName, email: user.email, accessToken: accessToken, refreshToken: refreshToken });
-
   } catch (error) {
     console.error('Error logging in', error);
     res.status(500).json({ error: 'Internal Server Error' });
@@ -143,41 +142,65 @@ export const refreshTokenF = (req: Request, res: Response) => {
 
 export const sendProfileDataF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken;
-  
+
   if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
     return res.status(401).json({ message: 'Access token must be a string' });
   }
-  
+
   try {
     const user = await isAuthenticated(accessToken);
-    
+
     if (!user) {
       return res.status(401).json({ message: 'User not authenticated' });
     }
-    
-    // Fetch additional freelancer data
-    const freelancer = await Freelancer.findOne({ user: user._id }).populate('proposals');
-    
-    if (!freelancer) {
-      return res.status(404).json({ message: 'Freelancer profile not found' });
-    }
 
-    const data = {
-      id: freelancer._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      image: user.image,
-      skills: freelancer.skills,
-      address: freelancer.address,
-      phone: freelancer.phone,
-      profileTitle: freelancer.profileTitle,
-      overview: freelancer.overview,
-      employmentHistory: freelancer.employmentHistory,
-      proposals: freelancer.proposals.map(p => p._id), 
-      hireCount: freelancer.hireCount
-    };
+    // Fetch additional freelancer data
+    let data;
+    if (user.role === 'freelancer') {
+      const freelancer = await Freelancer.findOne({ user: user._id }).populate('proposals');
+      if (!freelancer) {
+        return res.status(404).json({ message: 'Freelancer profile not found' });
+      }
+
+      data = {
+        id: freelancer._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        image: user.image,
+        skills: freelancer.skills,
+        address: freelancer.address,
+        phone: freelancer.phone,
+        profileTitle: freelancer.profileTitle,
+        overview: freelancer.overview,
+        employmentHistory: freelancer.employmentHistory,
+        proposals: freelancer.proposals.map(p => p._id),
+        hireCount: freelancer.hireCount
+      };
+    } else if (user.role === 'administrator') {
+      const administrator = await User.findById(user._id);
+      if (!administrator) {
+        return res.status(404).json({ message: 'admin profile not found' });
+      }
+      data = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        image: user.image,
+      };
+    } else if (user.role === 'buyer') {
+      const buyer = await User.findOne({ user: user._id });
+      if (!buyer) {
+        return res.status(404).json({ message: 'buyer profile not found' });
+      }
+      data = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        image: user.image,
+      };
+    }
 
     return res.status(200).json({ message: 'Successfully sent the profile data', userInfo: data });
   } catch (e) {
@@ -228,6 +251,7 @@ export const setImageF = async (req: Request, res: Response) => {
 export const saveUserDataF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
   const userData = req.body
+  // console.log('the body is', req.body)
   if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
     return res.status(401).json({ message: 'Access token must be a string' });
@@ -242,7 +266,7 @@ export const saveUserDataF = async (req: Request, res: Response) => {
     user.firstName = userData.first_name
     user.lastName = userData.last_name
     const freelancer = await Freelancer.findById(userData.id)
-    if(!freelancer) {
+    if (!freelancer) {
       return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
     }
     freelancer.profileTitle = userData.profileTitle
@@ -250,8 +274,10 @@ export const saveUserDataF = async (req: Request, res: Response) => {
     freelancer.phone = userData.phone
     freelancer.address = userData.address
     freelancer.skills = userData.skills
+    freelancer.employmentHistory = userData.employmentHistory
     await user.save();
     await freelancer.save();
+    // console.log('I am in the usersFeatures from handleSaveEmployment', freelancer)
     return res.status(200).json({ message: "User data has been updated successfully." })
   } catch (e) {
     console.error('error while authenticating user at users.ts', e)
