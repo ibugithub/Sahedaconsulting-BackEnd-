@@ -190,7 +190,7 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         image: user.image,
       };
     } else if (user.role === 'buyer') {
-      const buyer = await User.findOne({ user: user._id });
+      const buyer = await User.findById(user._id);
       if (!buyer) {
         return res.status(404).json({ message: 'buyer profile not found' });
       }
