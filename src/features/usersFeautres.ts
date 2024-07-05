@@ -251,7 +251,7 @@ export const setImageF = async (req: Request, res: Response) => {
 export const saveUserDataF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
   const userData = req.body
-  // console.log('the body is', req.body)
+  console.log('the body is', req.body)
   if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
     return res.status(401).json({ message: 'Access token must be a string' });
