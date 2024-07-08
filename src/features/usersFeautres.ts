@@ -176,7 +176,8 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         overview: freelancer.overview,
         employmentHistory: freelancer.employmentHistory,
         proposals: freelancer.proposals.map(p => p._id),
-        hireCount: freelancer.hireCount
+        hireCount: freelancer.hireCount,
+        role: user.role
       };
     } else if (user.role === 'administrator') {
       const administrator = await User.findById(user._id);
