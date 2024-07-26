@@ -1,6 +1,6 @@
 import express, {Request} from "express";
 import multer from "multer";
-import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, showHiredServiceC, showCompletedServiceC, markCompletedC, markHiredC, showServiceDetailsC, hireFreelancerC} from "../controllers/adminController";
+import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, showHiredServiceC, showCompletedServiceC, markCompletedC, markHiredC, showServiceDetailsC, hireFreelancerC, showUsersC} from "../controllers/adminController";
 
 const router = express.Router();
 
@@ -31,4 +31,5 @@ router.get('/hiredServices', showHiredServiceC);
 router.get('/completedServices', showCompletedServiceC);
 router.get('/serviceDetails/:id', showServiceDetailsC);
 router.post('/hireFreelancer', hireFreelancerC);
+router.get('/showUsers', showUsersC);
 export default router;

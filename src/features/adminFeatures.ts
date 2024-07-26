@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { Service } from "../models/ServiceModel"
+import { User } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
@@ -229,4 +230,9 @@ export const hireFreelancerF = async (req: Request, res: Response) => {
 export const isHird = async (req: Request, res: Response) => {
   const {userId, service} = req.body;
   const proposal = await Proposals.findOne({ 'service': service, 'freelancer': userId });
+}
+
+export const showUsersF = async (req: Request, res: Response) => {
+  const users = await User.find();
+  return res.status(200).json(users);
 }
