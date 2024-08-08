@@ -201,8 +201,6 @@ export const showServiceDetailsF = async (req: Request, res: Response) => {
 
 export const hireFreelancerF = async (req: Request, res: Response) => {
   const { freelancerId, serviceId }  = req.body;
-  console.log('the feelancer is', freelancerId);
-  console.log('the service is', serviceId);
   const proposal = await Proposals.findOne({ 'service': serviceId, 'freelancer': freelancerId });
   if (!proposal) {
     console.error('Could not find the proposal at adminFeatures.ts');
@@ -236,3 +234,7 @@ export const showUsersF = async (req: Request, res: Response) => {
   const users = await User.find();
   return res.status(200).json(users);
 }
+
+export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
+  console.log('the body is', req.body);
+};
