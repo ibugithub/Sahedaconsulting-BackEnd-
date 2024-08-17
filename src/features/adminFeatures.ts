@@ -1,6 +1,7 @@
 import { Request, Response } from "express"
 import { Service } from "../models/ServiceModel"
 import { User } from "../models/User";
+import { Freelancer } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
@@ -236,5 +237,19 @@ export const showUsersF = async (req: Request, res: Response) => {
 }
 
 export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
-  console.log('the body is', req.body);
+  try {
+    console.log('the body is', req.body);
+    const { id } = req.body; 
+    const freelancer = await Freelancer.findOne({ _id: id });
+
+    if (freelancer) {
+      console.log('the freelancer is', freelancer);
+      res.status(200).json(freelancer);
+    } else {
+      res.status(404).json({ message: 'Freelancer not found' });
+    }
+  } catch (error) {
+    console.error('Error finding freelancer:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
