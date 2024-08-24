@@ -244,7 +244,10 @@ export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
 
     if (freelancer) {
       console.log('the freelancer is', freelancer);
-      res.status(200).json(freelancer);
+      const user = await User.findOne({ _id: freelancer.user });
+      console.log('user is', user);
+      const data =  { freelancer : freelancer, user : user };
+      res.status(200).json(data);
     } else {
       res.status(404).json({ message: 'Freelancer not found' });
     }
@@ -253,3 +256,27 @@ export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+export const sendFreelancerProposalsF = async (req: Request, res: Response) => {
+  try {
+    console.log('the body is', req.body);
+    const { id } = req.body;
+    const proposal = await Proposals.findOne({ _id: id });
+    if (proposal) {
+      const freelancer = await Freelancer.findOne({ _id: proposal.freelancer });
+      if (!freelancer) {
+        res.status(404).json({ message: 'Freelancer not found' });
+        return;
+      }
+      const user = await User.findOne({_id: freelancer.user});
+      const service = await Service.findOne({ _id: proposal.service });
+      const userInfo =  { proposal : proposal, freelancer : freelancer, user : user, service : service };
+      res.status(200).json(userInfo);
+    } else {
+      res.status(404).json({ message: 'Proposals not found' });
+    }
+  } catch (error) {
+    console.error('Error finding proposals at adminFeatures.ts', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+}
