@@ -42,7 +42,7 @@ export const deleteServiceC = async (req: Request, res: Response) => {
   try {
     await isAdministrator(accessToken);
     const serviceId = req.params.id;
-    const proposal = await Proposals.findOne({ 'service': serviceId });
+    const proposal = await Proposals.findOne({ 'service': serviceId, status: 'accepted' });
     if (proposal) {
       return res.status(400).json({ error: 'Service is already hired so you can not delete it', customCode: 17 });
     }
