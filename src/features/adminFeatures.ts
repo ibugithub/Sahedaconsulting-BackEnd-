@@ -5,6 +5,7 @@ import { Freelancer } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
+import { UserInterface, UserRole } from "../interface";
 
 export const serviceUploadS = async (req: Request, res: Response) => {
   let imagePath = "";
@@ -201,13 +202,13 @@ export const showServiceDetailsF = async (req: Request, res: Response) => {
 }
 
 export const hireFreelancerF = async (req: Request, res: Response) => {
-  const { freelancerId, serviceId }  = req.body;
+  const { freelancerId, serviceId } = req.body;
   const proposal = await Proposals.findOne({ 'service': serviceId, 'freelancer': freelancerId });
   if (!proposal) {
     console.error('Could not find the proposal at adminFeatures.ts');
     return res.status(404).json({ error: 'Proposal not found' });
   }
-  if(proposal.status === 'accepted') {
+  if (proposal.status === 'accepted') {
     return res.status(400).json({ error: 'Already hired' });
   }
   proposal.status = 'accepted';
@@ -218,7 +219,7 @@ export const hireFreelancerF = async (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Service not found' });
   }
   newService.hiredFreelancers.push(freelancerId);
-  newService.hiredCount = (newService.hiredCount ?? 0 )+ 1;
+  newService.hiredCount = (newService.hiredCount ?? 0) + 1;
   if (newService.hiredCount === newService.requiredFreelancers) {
     newService.isHiringClosed = true;
   }
@@ -227,7 +228,7 @@ export const hireFreelancerF = async (req: Request, res: Response) => {
 }
 
 export const isHird = async (req: Request, res: Response) => {
-  const {userId, service} = req.body;
+  const { userId, service } = req.body;
   const proposal = await Proposals.findOne({ 'service': service, 'freelancer': userId });
 }
 
@@ -239,14 +240,14 @@ export const showUsersF = async (req: Request, res: Response) => {
 export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
   try {
     console.log('the body is', req.body);
-    const { id } = req.body; 
+    const { id } = req.body;
     const freelancer = await Freelancer.findOne({ _id: id });
 
     if (freelancer) {
       console.log('the freelancer is', freelancer);
       const user = await User.findOne({ _id: freelancer.user });
       console.log('user is', user);
-      const data =  { freelancer : freelancer, user : user };
+      const data = { freelancer: freelancer, user: user };
       res.status(200).json(data);
     } else {
       res.status(404).json({ message: 'Freelancer not found' });
@@ -268,9 +269,9 @@ export const sendFreelancerProposalsF = async (req: Request, res: Response) => {
         res.status(404).json({ message: 'Freelancer not found' });
         return;
       }
-      const user = await User.findOne({_id: freelancer.user});
+      const user = await User.findOne({ _id: freelancer.user });
       const service = await Service.findOne({ _id: proposal.service });
-      const userInfo =  { proposal : proposal, freelancer : freelancer, user : user, service : service };
+      const userInfo = { proposal: proposal, freelancer: freelancer, user: user, service: service };
       res.status(200).json(userInfo);
     } else {
       res.status(404).json({ message: 'Proposals not found' });
@@ -279,4 +280,17 @@ export const sendFreelancerProposalsF = async (req: Request, res: Response) => {
     console.error('Error finding proposals at adminFeatures.ts', error);
     res.status(500).json({ message: 'Server error' });
   }
+}
+
+export const changeUserRoleF = async (req: Request, res: Response, userId: string, newRole: UserRole) => {
+  const user = await User.findById(userId);
+  console.log('the userid is', userId);
+  console.log('the user is ', user);
+  if (!user) {
+    res.status(404).json({ message: 'User not found' });
+    return;
+  }
+  user.role = newRole;
+  await user.save();
+  return res.status(200).json({ message: 'Role changed successfully' });
 }

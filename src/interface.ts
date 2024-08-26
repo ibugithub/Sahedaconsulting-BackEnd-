@@ -1,16 +1,24 @@
-import {Types} from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 
-export interface UserInterface {
+
+export enum UserRole {
+  Buyer = 'buyer',
+  Freelancer = 'freelancer',
+  Administrator = 'administrator',
+}
+
+
+export interface UserInterface extends Document {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   cPassword: string;
   image?: string;
-  role: 'buyer' | 'freelancer' | 'administrator';
+  role: UserRole;
 }
 
-export interface FreelancerInterface {
+export interface FreelancerInterface extends Document {
   user: Types.ObjectId;
   skills: string[];
   address?: string;
@@ -27,7 +35,7 @@ export interface FreelancerInterface {
   hireCount?: number;
 }
 
-export interface ServiceInterface {
+export interface ServiceInterface extends Document {
   title: string;
   description: string;
   price: number;
@@ -43,7 +51,7 @@ export interface ServiceInterface {
   requiredFreelancers: number;
 }
 
-export interface ProposalInterface {
+export interface ProposalInterface extends Document {
   freelancer: Types.ObjectId;
   service: Types.ObjectId;
   coverLetter: string;

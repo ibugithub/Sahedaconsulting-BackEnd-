@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
-import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF} from "../features/adminFeatures"
+import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF} from "../features/adminFeatures"
 import { isAdministrator } from '../Utils/auth';
 import { Proposals } from '../models/ProposalsModel';
+import { User } from '../models/User';
+import { UserInterface } from '../interface';
 
 export const serviceUploadC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
@@ -146,6 +148,19 @@ export const sendFreelancerProposalsC = async(req: Request, res: Response) => {
   try {
     await isAdministrator(accessToken);
     return sendFreelancerProposalsF(req, res);
+  } catch (err) {
+    console.error('error while checking if user is an administrator at adminController.ts', err);
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  }
+}
+
+export const changeUserRoleC = async(req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken as string;
+  try {
+    await isAdministrator(accessToken); 
+    const newRole = req.body.role;
+    const userId = req.body.user;
+    return changeUserRoleF(req, res, userId, newRole );
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
