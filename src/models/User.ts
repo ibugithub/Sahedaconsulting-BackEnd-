@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema<UserInterface>({
  email: { type: String, required: true, unique: true },
  password: { type: String, required: true, selected: false},
  image: {type: String},
- role: {type: String, enum: ['buyer', 'freelancer', 'administrator']},
+ role: {type: String, enum: ['buyer', 'freelancer', 'administrator', 'engineeringAdmin', 'managementAdmin', 'itAdmin']},
 });
 
 userSchema.methods.getFullName = function() {

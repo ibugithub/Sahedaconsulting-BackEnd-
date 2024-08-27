@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
-import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF} from "../features/adminFeatures"
+import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF, addNewUsersF, deleteUserF} from "../features/adminFeatures"
 import { isAdministrator } from '../Utils/auth';
 import { Proposals } from '../models/ProposalsModel';
-import { User } from '../models/User';
-import { UserInterface } from '../interface';
+
 
 export const serviceUploadC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
@@ -165,4 +164,27 @@ export const changeUserRoleC = async(req: Request, res: Response) => {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
   }
+} 
+
+export  const addNewUsersC = async (req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken as string;
+  try {
+    await isAdministrator(accessToken);
+  } catch (err) {
+    console.error('error while checking if user is an administrator at adminController.ts', err);
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  }
+ return addNewUsersF(req, res);
+}
+
+export const deleteUserC = async (req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken as string;
+  try { 
+    await isAdministrator(accessToken);
+  } catch (err) { 
+    console.error('error while checking if user is an administrator at adminController.ts', err);
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err }); 
+  }
+  const id  = req.params.id;
+  return deleteUserF(req, res, id);
 }

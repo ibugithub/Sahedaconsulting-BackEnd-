@@ -294,3 +294,35 @@ export const changeUserRoleF = async (req: Request, res: Response, userId: strin
   await user.save();
   return res.status(200).json({ message: 'Role changed successfully' });
 }
+
+export const addNewUsersF = async (req: Request, res: Response) => {
+  const { firstName, lastName, email, role } = req.body;
+  if (!firstName || !lastName || !email || !role) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+  const wantedRoles = ['administrator', 'engineeringAdmin', 'managementAdmin', 'itAdmin'];
+  if (!wantedRoles.includes(role)) {
+    return res.status(400).json({ message: 'Invalid role' });
+  }
+  try {
+    const existedUser = await User.findOne({ email });
+    if (existedUser) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+    const user = new User({ firstName, lastName, email, role, password: "password" });
+    await user.save();
+    return res.status(201).json({ message: 'User added successfully' });
+  } catch (error) {
+    console.error('Error occurred while adding a new user:', error);
+    return res.status(500).json({ error: 'Server error' });
+  }
+}
+
+export const deleteUserF = async (req: Request, res: Response, id: string) => {
+  const user = await User.findById(id);
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+  await User.findByIdAndDelete(id);
+  return res.status(201).json({ message: 'User deleted successfully' });
+}
