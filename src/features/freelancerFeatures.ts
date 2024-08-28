@@ -3,6 +3,8 @@ import { Service } from "../models/ServiceModel";
 import { Proposals } from "../models/ProposalsModel";
 import { Freelancer, User } from "../models/User";
 import { isAlreadyApplied } from "../Utils/proposals";
+import { FreelancerInterface } from "../interface";
+import { ObjectId } from "mongodb";
 
 export const showWorksFeature = async (req: Request, res: Response) => {
   try {
@@ -35,7 +37,7 @@ export const addProposalF = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Freelancer or service not found' });
     }
 
-    const existingProposal = await isAlreadyApplied(freelancer._id, service._id);
+    const existingProposal = await isAlreadyApplied(freelancer._id as ObjectId, service._id as ObjectId);
     if (existingProposal) {
       console.error('You already have a proposal for this service');
       return res.status(400).json({ message: 'You already have a proposal for this service' });
@@ -48,10 +50,10 @@ export const addProposalF = async (req: Request, res: Response) => {
       price: proposalData.price,
     });
 
-    freelancer.proposals.push(newProposal._id);
-    service.proposals.push(newProposal._id);
+    freelancer.proposals.push(newProposal._id as ObjectId);
+    service.proposals.push(newProposal._id as ObjectId);
     service.proposalsCount = (service.proposalsCount ?? 0) + 1;
-    service.appliedFreelancers.push(freelancer._id);
+    service.appliedFreelancers.push(freelancer._id as ObjectId);
     await newProposal.save();
     await freelancer.save();
     await service.save();
@@ -75,7 +77,7 @@ export const isAppliedF = async (req: Request, res: Response) => {
     console.error('Freelancer or service not found');
     return res.status(404).json({ message: 'Freelancer or service not found' });
   }
-  const alreadyApplied = await isAlreadyApplied(freelancer._id, serviceId);
+  const alreadyApplied = await isAlreadyApplied(freelancer._id as ObjectId, serviceId as ObjectId);
   if (alreadyApplied) {
     return res.status(200).json({ message: 'not applied', isApplied: true });
   }

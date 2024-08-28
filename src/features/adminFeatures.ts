@@ -5,7 +5,8 @@ import { Freelancer } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
-import { UserInterface, UserRole } from "../interface";
+import {  UserRole } from "../interface";
+import bcrypt from 'bcryptjs';
 
 export const serviceUploadS = async (req: Request, res: Response) => {
   let imagePath = "";
@@ -309,7 +310,10 @@ export const addNewUsersF = async (req: Request, res: Response) => {
     if (existedUser) {
       return res.status(400).json({ message: 'User already exists' });
     }
-    const user = new User({ firstName, lastName, email, role, password: "password" });
+    const password = 'admin';
+    const hasedPassword = await bcrypt.hash(password, 10);
+    const user = new User({ firstName, lastName, email, role, password:hasedPassword });
+    console.log('the user password is ', user.password);
     await user.save();
     return res.status(201).json({ message: 'User added successfully' });
   } catch (error) {

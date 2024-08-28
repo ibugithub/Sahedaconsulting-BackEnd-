@@ -201,6 +201,17 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         email: user.email,
         image: user.image,
       };
+    } else if (user.role === 'engineeringAdmin' || user.role === 'itAdmin' || user.role === 'managementAdmin') {
+      const adminUser = await User.findById(user._id);
+      if (!adminUser) {
+        return res.status(404).json({ message: 'adminUser profile not found' });
+      }
+      data = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        image: user.image,
+      };
     }
 
     return res.status(200).json({ message: 'Successfully sent the profile data', userInfo: data });
