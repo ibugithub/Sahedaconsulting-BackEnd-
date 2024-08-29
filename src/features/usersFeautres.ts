@@ -263,7 +263,6 @@ export const setImageF = async (req: Request, res: Response) => {
 export const saveUserDataF = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
   const userData = req.body
-  console.log('the body is', req.body)
   if (typeof accessToken !== 'string') {
     console.error('Access token must be a string at user.ts file');
     return res.status(401).json({ message: 'Access token must be a string' });
@@ -289,10 +288,26 @@ export const saveUserDataF = async (req: Request, res: Response) => {
     freelancer.employmentHistory = userData.employmentHistory
     await user.save();
     await freelancer.save();
-    // console.log('I am in the usersFeatures from handleSaveEmployment', freelancer)
     return res.status(200).json({ message: "User data has been updated successfully." })
   } catch (e) {
     console.error('error while authenticating user at users.ts', e)
     return res.status(401).json({ message: 'error while authenticating user at users.ts', error: e });
+  }
+}
+
+export const changePasswordF = async (req: Request, res: Response) => {
+  try {
+    const {oldPassword, newPassword, user} = req.body;
+    const isMatched = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatched) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(201).json({ message: 'Password has been changed successfully' });
+  } catch (error) {
+    console.error('Error while changing password at usersFeatures.ts', error);
+    return res.status(500).json({ message: 'Error while changing password at usersFeatures.ts' });
   }
 }

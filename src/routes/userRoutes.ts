@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC} from '../controllers/userController';
+import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC, changePasswordC} from '../controllers/userController';
 import { upload } from './adminRoutes';
 
 
@@ -13,6 +13,7 @@ router.post('/setImage', upload.single('image'), setImageC);
 router.post('/saveUserData', saveUserDataC);
 router.get('/isAuthenticated', isAuthenticatedC);
 router.get('/isAdministrator', isAdministratorC);
+router.post('/changePassword', changePasswordC);
 
 
 export default router;
