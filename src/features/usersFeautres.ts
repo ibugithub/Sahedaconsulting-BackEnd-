@@ -162,7 +162,6 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
       if (!freelancer) {
         return res.status(404).json({ message: 'Freelancer profile not found' });
       }
-
       data = {
         id: freelancer._id,
         firstName: user.firstName,
@@ -189,6 +188,7 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         image: user.image,
+        role: user.role
       };
     } else if (user.role === 'buyer') {
       const buyer = await User.findById(user._id);
@@ -200,6 +200,7 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         image: user.image,
+        role: user.role
       };
     } else if (user.role === 'engineeringAdmin' || user.role === 'itAdmin' || user.role === 'managementAdmin') {
       const adminUser = await User.findById(user._id);
@@ -211,6 +212,7 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         image: user.image,
+        role: user.role,
       };
     }
 
@@ -261,33 +263,45 @@ export const setImageF = async (req: Request, res: Response) => {
 }
 
 export const saveUserDataF = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken
-  const userData = req.body
-  if (typeof accessToken !== 'string') {
-    console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string' });
-  }
-
+  const { userInfo, user } = req.body
   try {
-    const user = await isAuthenticated(accessToken);
-    if (!user) {
-      console.error('Could not find user at user.ts');
-      return res.status(401).json({ message: 'user not found' });
+    user.firstName = userInfo.first_name
+    user.lastName = userInfo.last_name
+
+    // For Freelancer
+    if (user.role === 'freelancer') {
+      const freelancer = await Freelancer.findById(userInfo.id)
+      if (!freelancer) {
+        return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
+      }
+      freelancer.profileTitle = userInfo.profileTitle
+      freelancer.overview = userInfo.overview
+      freelancer.phone = userInfo.phone
+      freelancer.address = userInfo.address
+      freelancer.skills = userInfo.skills
+      freelancer.employmentHistory = userInfo.employmentHistory
+      await user.save();
+      await freelancer.save();
     }
-    user.firstName = userData.first_name
-    user.lastName = userData.last_name
-    const freelancer = await Freelancer.findById(userData.id)
-    if (!freelancer) {
-      return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
+
+    // For buyer
+    if (user.role === 'buyer') {
+      const buyer = await Buyer.findById(userInfo.id)
+      if (!buyer) {
+        return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
+      }
+      buyer.phone = userInfo.phone
+      buyer.address = userInfo.address
+      buyer.companyName = userInfo.companyName
+      await user.save();
+      await buyer.save();
     }
-    freelancer.profileTitle = userData.profileTitle
-    freelancer.overview = userData.overview
-    freelancer.phone = userData.phone
-    freelancer.address = userData.address
-    freelancer.skills = userData.skills
-    freelancer.employmentHistory = userData.employmentHistory
-    await user.save();
-    await freelancer.save();
+    // For other
+    if (user.role === 'administrator' || user.role === 'engineeringAdmin' || user.role === 'itAdmin' || user.role === 'managementAdmin') {
+      // adintional details could be added in the future
+      await user.save();
+    }
+
     return res.status(200).json({ message: "User data has been updated successfully." })
   } catch (e) {
     console.error('error while authenticating user at users.ts', e)
@@ -297,7 +311,7 @@ export const saveUserDataF = async (req: Request, res: Response) => {
 
 export const changePasswordF = async (req: Request, res: Response) => {
   try {
-    const {oldPassword, newPassword, user} = req.body;
+    const { oldPassword, newPassword, user } = req.body;
     const isMatched = await bcrypt.compare(oldPassword, user.password);
     if (!isMatched) {
       return res.status(400).json({ message: 'Old password is incorrect' });

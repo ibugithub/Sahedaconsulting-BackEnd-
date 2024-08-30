@@ -1,9 +1,25 @@
 import { Request, Response } from 'express';
 import { clearCookie } from '../Utils/clearCookie';
 import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF,isAuthenticatedF, isAdministratorF, changePasswordF} from '../features/usersFeautres';
-import { isAdministrator, isAuthenticated } from '../Utils/auth';
+import { isAuthenticated } from '../Utils/auth';
 
-
+export const checkAuthentication = async (req: Request, res: Response) => {
+  const accessToken = req.headers.accesstoken
+  if (typeof accessToken !== 'string') {
+    console.error('Access token must be a string at user.ts file');
+    return res.status(401).json({ message: 'Access token must be a string' });
+  } 
+  try {
+    const user = await isAuthenticated(accessToken);
+    if (!user) {
+      console.error('Could not find user at user.ts');
+      return res.status(401).json({ message: 'user not found' });
+    }
+    return user;
+  } catch (err) {
+    console.error("Error while changing password at userFeatures.ts", err);
+  }
+}
 export const register = async (req: Request, res: Response) => {
   registerF(req, res);
 }
@@ -36,25 +52,18 @@ export const setImageC = (req: Request, res: Response) => {
   setImageF(req, res);
 };
 
-export const saveUserDataC = (req: Request, res: Response) => {
-  saveUserDataF(req, res);
+export const saveUserDataC = async(req: Request, res: Response) => {
+  const user = await checkAuthentication(req, res);
+  if (user) {
+    req.body.user = user;
+    saveUserDataF(req, res);
+  }
 };
 
 export const changePasswordC = async(req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') {
-    console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string' });
-  } 
-  try {
-    const user = await isAuthenticated(accessToken);
-    if (!user) {
-      console.error('Could not find user at user.ts');
-      return res.status(401).json({ message: 'user not found' });
-    }
+  const user = await checkAuthentication(req, res);
+  if (user) {
     req.body.user = user;
     return changePasswordF(req, res);
-  } catch (err) {
-    console.error("Error while changing password at userFeatures.ts", err);
   }
 }
