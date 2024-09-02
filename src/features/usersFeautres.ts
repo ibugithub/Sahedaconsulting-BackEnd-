@@ -191,16 +191,22 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         role: user.role
       };
     } else if (user.role === 'buyer') {
-      const buyer = await User.findById(user._id);
+      const buyer = await Buyer.findOne({ user: user._id });
       if (!buyer) {
         return res.status(404).json({ message: 'buyer profile not found' });
       }
       data = {
+        userId: user._id,
+        buyerId: buyer._id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         image: user.image,
-        role: user.role
+        role: user.role,
+        address: buyer.address,
+        phone: buyer.phone,
+        companyName: buyer.companyName,
+        companyDescription: buyer.companyDescription
       };
     } else if (user.role === 'engineeringAdmin' || user.role === 'itAdmin' || user.role === 'managementAdmin') {
       const adminUser = await User.findById(user._id);
@@ -264,9 +270,10 @@ export const setImageF = async (req: Request, res: Response) => {
 
 export const saveUserDataF = async (req: Request, res: Response) => {
   const { userInfo, user } = req.body
+  console.log('the body is ', req.body);
   try {
-    user.firstName = userInfo.first_name
-    user.lastName = userInfo.last_name
+    user.firstName = userInfo.firstName
+    user.lastName = userInfo.lastName
 
     // For Freelancer
     if (user.role === 'freelancer') {
@@ -286,13 +293,14 @@ export const saveUserDataF = async (req: Request, res: Response) => {
 
     // For buyer
     if (user.role === 'buyer') {
-      const buyer = await Buyer.findById(userInfo.id)
+      const buyer = await Buyer.findById(userInfo.buyerId)
       if (!buyer) {
-        return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
+        return res.status(404).json({ message: 'buyer not found at userFeatures.ts' });
       }
       buyer.phone = userInfo.phone
       buyer.address = userInfo.address
       buyer.companyName = userInfo.companyName
+      buyer.companyDescription = userInfo.companyDescription
       await user.save();
       await buyer.save();
     }
@@ -302,7 +310,7 @@ export const saveUserDataF = async (req: Request, res: Response) => {
       await user.save();
     }
 
-    return res.status(200).json({ message: "User data has been updated successfully." })
+    return res.status(201).json({ message: "User data has been updated successfully." })
   } catch (e) {
     console.error('error while authenticating user at users.ts', e)
     return res.status(401).json({ message: 'error while authenticating user at users.ts', error: e });
