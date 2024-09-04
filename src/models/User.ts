@@ -8,6 +8,7 @@ const userSchema = new mongoose.Schema<UserInterface>({
  password: { type: String, required: true, selected: false},
  image: {type: String},
  role: {type: String, enum: ['buyer', 'freelancer', 'administrator', 'engineeringAdmin', 'managementAdmin', 'itAdmin']},
+ isVerified: {type: Boolean, default: false},
 });
 
 userSchema.methods.getFullName = function() {
@@ -43,3 +44,8 @@ const freelancerSchema = new mongoose.Schema<FreelancerInterface>({
 });
 
 export const Freelancer = mongoose.model('Freelancer', freelancerSchema)
+
+const secretCodeschema = new mongoose.Schema({
+  code: {type: String, required: true}
+});
+export const secretCode = mongoose.model('SecretCode', secretCodeschema)

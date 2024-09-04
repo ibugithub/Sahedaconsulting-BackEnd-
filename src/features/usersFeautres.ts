@@ -21,7 +21,7 @@ export const registerF = async (req: Request, res: Response) => {
       password,
       cPassword,
       role,
-    }: UserInterface = req.body;
+    } = req.body;
     if (!firstName || !lastName || !email || !password || !cPassword) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -277,7 +277,7 @@ export const saveUserDataF = async (req: Request, res: Response) => {
 
     // For Freelancer
     if (user.role === 'freelancer') {
-      const freelancer = await Freelancer.findById(userInfo.id)
+      const freelancer = await Freelancer.findById(userInfo._id)
       if (!freelancer) {
         return res.status(404).json({ message: 'freelancer not found at userFeatures.ts' });
       }

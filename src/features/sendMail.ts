@@ -15,9 +15,9 @@ export const sendMailF = async (req: Request, res: Response) => {
   });
   const mailOptions = {
     from: gmailAccount,
-    to: 'ibrahimibu681@gmail.com',
+    to: 'outsideworkibrahim@gmail.com',
     subject: `Need attention! A ${formData.serviceAs} want to get some work done`,
-    text: `A ${formData.serviceAs} ${formData.firstName} ${formData.lastName} want to connect.  ${JSON.stringify(formData.description)}`
+    text: `A ${formData.serviceAs} ${formData.firstName} ${formData.lastName} want to connect.  ${JSON.stringify(formData.description)}. ${formData.firstName}'s Email is: ${formData.email}`
   };
 
   transporter.sendMail(mailOptions, (error, info) =>{

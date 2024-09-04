@@ -16,6 +16,7 @@ export interface UserInterface extends Document {
   cPassword: string;
   image?: string;
   role: UserRole;
+  isVerified: boolean;
 }
 
 export interface FreelancerInterface extends Document {
