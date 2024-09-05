@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC, changePasswordC} from '../controllers/userController';
+import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC, changePasswordC, verifyEmailC} from '../controllers/userController';
 import { upload } from './adminRoutes';
 
 
@@ -14,6 +14,7 @@ router.post('/saveUserData', saveUserDataC);
 router.get('/isAuthenticated', isAuthenticatedC);
 router.get('/isAdministrator', isAdministratorC);
 router.post('/changePassword', changePasswordC);
+router.post('/verifyEmail', verifyEmailC);
 
 
 export default router;

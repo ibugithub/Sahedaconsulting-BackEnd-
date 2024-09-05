@@ -9,19 +9,18 @@ import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
 import { isAdministrator, isAuthenticated } from '../Utils/auth';
 import { UserInterface } from '../interface';
 import { Buyer, Freelancer } from '../models/User';
+import { sendMailF } from './sendMail';
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
 
+
 export const registerF = async (req: Request, res: Response) => {
+  console.log('the request body is', req.body);
   try {
     const {
-      firstName,
-      lastName,
-      email,
-      password,
-      cPassword,
-      role,
+      formData, frontEndDomain
     } = req.body;
+    const { firstName, lastName, email, password, cPassword, role } = formData;
     if (!firstName || !lastName || !email || !password || !cPassword) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -71,7 +70,10 @@ export const registerF = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Error while creating Buyer or Freelancer account', error: error })
     }
     await newUser.save();
-
+    req.body.type = 'emailVerification'
+    req.body.formData = {firstName: firstName, lastName: lastName, email: email}
+    req.body.frontEndDomain = frontEndDomain
+    sendMailF(req, res);
     res.status(201).json({ message: "User has been registered successfully" });
   } catch (error) {
     console.error('Error while registering the user', error);
@@ -176,7 +178,8 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         employmentHistory: freelancer.employmentHistory,
         proposals: freelancer.proposals.map(p => p._id),
         hireCount: freelancer.hireCount,
-        role: user.role
+        role: user.role,
+        isVerified: user.isVerified
       };
     } else if (user.role === 'administrator') {
       const administrator = await User.findById(user._id);
@@ -188,7 +191,8 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         lastName: user.lastName,
         email: user.email,
         image: user.image,
-        role: user.role
+        role: user.role,
+        isVerified: user.isVerified
       };
     } else if (user.role === 'buyer') {
       const buyer = await Buyer.findOne({ user: user._id });
@@ -206,7 +210,8 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         address: buyer.address,
         phone: buyer.phone,
         companyName: buyer.companyName,
-        companyDescription: buyer.companyDescription
+        companyDescription: buyer.companyDescription,
+        isVerified: user.isVerified
       };
     } else if (user.role === 'engineeringAdmin' || user.role === 'itAdmin' || user.role === 'managementAdmin') {
       const adminUser = await User.findById(user._id);
@@ -219,6 +224,7 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
         email: user.email,
         image: user.image,
         role: user.role,
+        isVerified: user.isVerified
       };
     }
 

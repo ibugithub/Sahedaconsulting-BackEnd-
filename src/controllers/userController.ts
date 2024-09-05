@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import { clearCookie } from '../Utils/clearCookie';
 import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF,isAuthenticatedF, isAdministratorF, changePasswordF} from '../features/usersFeautres';
-import { isAuthenticated } from '../Utils/auth';
+import { isAuthenticated } from '../Utils/auth'; 
+import { verifyEmailF } from '../features/verifyEmail';
 
 export const checkAuthentication = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken
@@ -66,4 +67,8 @@ export const changePasswordC = async(req: Request, res: Response) => {
     req.body.user = user;
     return changePasswordF(req, res);
   }
+}
+
+export const verifyEmailC = async(req: Request, res: Response) => {
+  verifyEmailF(req, res);
 }
