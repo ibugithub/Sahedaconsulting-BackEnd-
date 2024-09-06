@@ -16,5 +16,4 @@ router.get('/isAdministrator', isAdministratorC);
 router.post('/changePassword', changePasswordC);
 router.post('/verifyEmail', verifyEmailC);
 
-
 export default router;
