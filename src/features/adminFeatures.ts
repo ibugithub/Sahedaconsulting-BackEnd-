@@ -241,14 +241,11 @@ export const showUsersF = async (req: Request, res: Response) => {
 
 export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
   try {
-    console.log('the body is', req.body);
     const { id } = req.body;
     const freelancer = await Freelancer.findOne({ _id: id });
 
     if (freelancer) {
-      console.log('the freelancer is', freelancer);
       const user = await User.findOne({ _id: freelancer.user });
-      console.log('user is', user);
       const data = { freelancer: freelancer, user: user };
       res.status(200).json(data);
     } else {
@@ -262,7 +259,6 @@ export const sendFreelancerDetailsF = async (req: Request, res: Response) => {
 
 export const sendFreelancerProposalsF = async (req: Request, res: Response) => {
   try {
-    console.log('the body is', req.body);
     const { id } = req.body;
     const proposal = await Proposals.findOne({ _id: id });
     if (proposal) {
@@ -286,8 +282,6 @@ export const sendFreelancerProposalsF = async (req: Request, res: Response) => {
 
 export const changeUserRoleF = async (req: Request, res: Response, userId: string, newRole: UserRole) => {
   const user = await User.findById(userId);
-  console.log('the userid is', userId);
-  console.log('the user is ', user);
   if (!user) {
     res.status(404).json({ message: 'User not found' });
     return;

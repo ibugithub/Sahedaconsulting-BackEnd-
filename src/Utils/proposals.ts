@@ -6,7 +6,6 @@ export const isAlreadyApplied = async (freelancerId: ObjectId, serviceId: Object
     'freelancer': freelancerId,
     'service': serviceId
   });
-  console.log('the proposal is ', proposal)
   if (proposal) {
     return true;
   }

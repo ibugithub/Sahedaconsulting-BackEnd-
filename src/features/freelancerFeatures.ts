@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import { Service } from "../models/ServiceModel";
 import { Proposals } from "../models/ProposalsModel";
-import { Freelancer, User } from "../models/User";
+import { Freelancer} from "../models/User";
 import { isAlreadyApplied } from "../Utils/proposals";
-import { FreelancerInterface } from "../interface";
+import { checkAuthentication } from "../Utils/auth";
 import { ObjectId } from "mongodb";
+import { UserInterface, ProposalInterface } from "../interface";
 
 export const showWorksFeature = async (req: Request, res: Response) => {
   try {
@@ -26,10 +27,9 @@ export const showWorkFeature = async (req: Request, res: Response) => {
   }
 }
 
-export const addProposalF = async (req: Request, res: Response) => {
-  const proposalData = req.body
+export const addProposalF = async (req: Request, res: Response, user: UserInterface, proposalData: ProposalInterface) => {
   try {
-    const freelancer = await Freelancer.findOne({ 'user': proposalData.userId }).populate('user')
+    const freelancer = await Freelancer.findOne({ 'user': user._id }).populate('user')
     const service = await Service.findById(proposalData.service)
     
     if (!freelancer || !service) {
@@ -62,16 +62,15 @@ export const addProposalF = async (req: Request, res: Response) => {
     console.error('Error while creating proposal', error);
     return res.status(500).json({ message: 'Error while creating proposal', error: error });
   }
-  return res.status(200).json({ message: 'This is the proposal' });
+  return res.status(200).json({ message: 'Proposal created successfully' });
 }
 
 export const isAppliedF = async (req: Request, res: Response) => {
-  const userId = req.body.userId;
-  const user = await User.findById(userId);
+  const user = await checkAuthentication(req, res);
   if (user?.role !== 'freelancer') {
     return res.status(403).json({ message: 'Not a freelancer' });
   }
-  const freelancer = await Freelancer.findOne({ 'user': userId }).populate('user');
+  const freelancer = await Freelancer.findOne({ 'user': user._id }).populate('user');
   const serviceId = req.body.service;
   if (!freelancer) {
     console.error('Freelancer or service not found');
@@ -79,7 +78,7 @@ export const isAppliedF = async (req: Request, res: Response) => {
   }
   const alreadyApplied = await isAlreadyApplied(freelancer._id as ObjectId, serviceId as ObjectId);
   if (alreadyApplied) {
-    return res.status(200).json({ message: 'not applied', isApplied: true });
+    return res.status(200).json({ message: 'applied', isApplied: true });
   }
-  return res.status(200).json({ message: 'applied', isApplied: false });
+  return res.status(200).json({ message: 'not applied', isApplied: false });
 }

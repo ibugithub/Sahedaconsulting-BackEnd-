@@ -6,7 +6,7 @@ import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import bcrypt from 'bcryptjs';
 import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
-import { isAdministrator, isAuthenticated } from '../Utils/auth';
+import { isAuthenticated } from '../Utils/auth';
 import { UserInterface } from '../interface';
 import { Buyer, Freelancer } from '../models/User';
 import { sendMailF } from './sendMail';
@@ -101,35 +101,6 @@ export const loginF = async (req: Request, res: Response) => {
   }
 };
 
-export const isAuthenticatedF = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') {
-    console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string' });
-  }
-  try {
-    const user = await isAuthenticated(accessToken);
-    return res.status(200).json({ message: 'User is authenticated', user });
-  } catch (error) {
-    console.error('Authentication error at users.ts:', error);
-    return res.status(401).json({ message: 'Error while authenticating user at users.ts', error });
-  }
-}
-
-export const isAdministratorF = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') {
-    console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string' });
-  }
-  try {
-    const user = await isAdministrator(accessToken);
-    return res.status(200).json({ message: 'User is an administrator', user });
-  } catch (e) {
-    console.error('error while checking if user is an administrator at users.ts', e);
-    return res.status(401).json({ message: 'Error while checking admin user at users.ts', e });
-  }
-}
 export const refreshTokenF = (req: Request, res: Response) => {
   try {
     const refreshToken = req.body.refreshToken;
@@ -142,22 +113,9 @@ export const refreshTokenF = (req: Request, res: Response) => {
   }
 }
 
-export const sendProfileDataF = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken;
-
-  if (typeof accessToken !== 'string') {
-    console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string' });
-  }
+export const sendProfileDataF = async (req: Request, res: Response, user: UserInterface) => {
 
   try {
-    const user = await isAuthenticated(accessToken);
-
-    if (!user) {
-      return res.status(401).json({ message: 'User not authenticated' });
-    }
-
-    // Fetch additional freelancer data
     let data;
     if (user.role === 'freelancer') {
       const freelancer = await Freelancer.findOne({ user: user._id }).populate('proposals');
@@ -235,15 +193,8 @@ export const sendProfileDataF = async (req: Request, res: Response) => {
   }
 };
 
-export const setImageF = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken
-  if (typeof accessToken !== 'string') {
-    console.error('Access token must be a string at user.ts file');
-    return res.status(401).json({ message: 'Access token must be a string' });
-  }
-
+export const setImageF = async (req: Request, res: Response, user: UserInterface) => {
   try {
-    const user = await isAuthenticated(accessToken);
     const imagePath = (req.file as Express.Multer.File).path.replace(/\\/g, "/")
     const options = {
       use_filename: true,
@@ -276,7 +227,6 @@ export const setImageF = async (req: Request, res: Response) => {
 
 export const saveUserDataF = async (req: Request, res: Response) => {
   const { userInfo, user } = req.body
-  console.log('the body is ', req.body);
   try {
     user.firstName = userInfo.firstName
     user.lastName = userInfo.lastName

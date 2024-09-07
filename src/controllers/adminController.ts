@@ -1,19 +1,16 @@
 import { Request, Response } from 'express';
-import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF, addNewUsersF, deleteUserF, createSecretCodeF} from "../features/adminFeatures"
-import { isAdministrator } from '../Utils/auth';
+import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF, addNewUsersF, deleteUserF, createSecretCodeF } from "../features/adminFeatures"
+import { isAdministrator, checkAdministrator } from '../Utils/auth';
 import { Proposals } from '../models/ProposalsModel';
 
 
 export const serviceUploadC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
-  try {
-    await isAdministrator(accessToken);
-    serviceUploadS(req, res);
-  } catch (err) {
-    console.error('error while checking if user is an administrator at adminController.ts', err);
-    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  const user = await checkAdministrator(req, res);
+  if (!user) {
+    console.error('User is not an administrator');
+    return res.status(401).json({ message: 'User is not an administrator' });
   }
-
+  serviceUploadS(req, res);
 }
 
 export const showServiceC = async (req: Request, res: Response) => {
@@ -120,7 +117,7 @@ export const hireFreelancerC = async (req: Request, res: Response) => {
   }
 }
 
-export const showUsersC = async(req: Request, res: Response) => {
+export const showUsersC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   try {
     await isAdministrator(accessToken);
@@ -131,7 +128,7 @@ export const showUsersC = async(req: Request, res: Response) => {
   }
 }
 
-export const sendFreelancerDetailsC = async(req: Request, res: Response) => {
+export const sendFreelancerDetailsC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   try {
     await isAdministrator(accessToken);
@@ -142,7 +139,7 @@ export const sendFreelancerDetailsC = async(req: Request, res: Response) => {
   }
 }
 
-export const sendFreelancerProposalsC = async(req: Request, res: Response) => {
+export const sendFreelancerProposalsC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   try {
     await isAdministrator(accessToken);
@@ -153,20 +150,20 @@ export const sendFreelancerProposalsC = async(req: Request, res: Response) => {
   }
 }
 
-export const changeUserRoleC = async(req: Request, res: Response) => {
+export const changeUserRoleC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken); 
+    await isAdministrator(accessToken);
     const newRole = req.body.role;
     const userId = req.body.user;
-    return changeUserRoleF(req, res, userId, newRole );
+    return changeUserRoleF(req, res, userId, newRole);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
   }
-} 
+}
 
-export  const addNewUsersC = async (req: Request, res: Response) => {
+export const addNewUsersC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   try {
     await isAdministrator(accessToken);
@@ -174,28 +171,28 @@ export  const addNewUsersC = async (req: Request, res: Response) => {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
   }
- return addNewUsersF(req, res);
+  return addNewUsersF(req, res);
 }
 
 export const deleteUserC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
-  try { 
+  try {
     await isAdministrator(accessToken);
-  } catch (err) { 
+  } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
-    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err }); 
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
   }
-  const id  = req.params.id;
+  const id = req.params.id;
   return deleteUserF(req, res, id);
 }
 
 export const createSecretCodeC = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
-  try { 
+  try {
     await isAdministrator(accessToken);
-  } catch (err) { 
+  } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
-    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err }); 
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
   }
   return createSecretCodeF(req, res);
 }
