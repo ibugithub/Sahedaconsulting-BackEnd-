@@ -38,17 +38,13 @@ export const isAdministrator = async (accessToken: string) => {
 export const checkAuthentication = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   const user = await isAuthenticated(accessToken);
-  if (user) {
-    return user;
-  }
+  return user;
 }
 
 export const checkAdministrator = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   const user = await isAdministrator(accessToken);
-  if (user) {
-    return user;
-  }
+  return user;
 }
 
 export const checkAuthenticationForFrontend = async (req: Request, res: Response) => {
@@ -70,7 +66,7 @@ export const checkAdministratorForFrontend = async (req: Request, res: Response)
   try {
     const user = await isAdministrator(accessToken);
     return res.status(200).json({ message: 'User is an administrator', user });
-  } catch (e:any) {
+  } catch (e: any) {
     console.error('error while checking if user is an administrator at users.ts', e.message);
     return res.status(401).json({ message: 'Error while checking admin user at users.ts', error: e.message });
   }

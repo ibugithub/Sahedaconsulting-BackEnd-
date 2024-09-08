@@ -32,9 +32,8 @@ export const updateServiceC = async (req: Request, res: Response) => {
 }
 
 export const deleteServiceC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     const serviceId = req.params.id;
     const proposal = await Proposals.findOne({ 'service': serviceId, status: 'accepted' });
     if (proposal) {
@@ -48,9 +47,8 @@ export const deleteServiceC = async (req: Request, res: Response) => {
 }
 
 export const markCompletedC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     markCompletedF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -59,9 +57,8 @@ export const markCompletedC = async (req: Request, res: Response) => {
 }
 
 export const markHiredC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     markHiredF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -70,9 +67,8 @@ export const markHiredC = async (req: Request, res: Response) => {
 }
 
 export const showHiredServiceC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     showHiredServiceF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -81,9 +77,8 @@ export const showHiredServiceC = async (req: Request, res: Response) => {
 }
 
 export const showCompletedServiceC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     showCompletedServiceF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -92,9 +87,8 @@ export const showCompletedServiceC = async (req: Request, res: Response) => {
 }
 
 export const showServiceDetailsC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     showServiceDetailsF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -103,9 +97,8 @@ export const showServiceDetailsC = async (req: Request, res: Response) => {
 }
 
 export const hireFreelancerC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     hireFreelancerF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -114,9 +107,8 @@ export const hireFreelancerC = async (req: Request, res: Response) => {
 }
 
 export const showUsersC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     return showUsersF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -125,9 +117,8 @@ export const showUsersC = async (req: Request, res: Response) => {
 }
 
 export const sendFreelancerDetailsC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     return sendFreelancerDetailsF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -136,9 +127,8 @@ export const sendFreelancerDetailsC = async (req: Request, res: Response) => {
 }
 
 export const sendFreelancerProposalsC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     return sendFreelancerProposalsF(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
@@ -147,9 +137,8 @@ export const sendFreelancerProposalsC = async (req: Request, res: Response) => {
 }
 
 export const changeUserRoleC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
     const newRole = req.body.role;
     const userId = req.body.user;
     return changeUserRoleF(req, res, userId, newRole);
@@ -160,9 +149,8 @@ export const changeUserRoleC = async (req: Request, res: Response) => {
 }
 
 export const addNewUsersC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
@@ -171,9 +159,8 @@ export const addNewUsersC = async (req: Request, res: Response) => {
 }
 
 export const deleteUserC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
@@ -183,9 +170,8 @@ export const deleteUserC = async (req: Request, res: Response) => {
 }
 
 export const createSecretCodeC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
   try {
-    await isAdministrator(accessToken);
+    await checkAdministrator(req, res);
   } catch (err) {
     console.error('error while checking if user is an administrator at adminController.ts', err);
     return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
