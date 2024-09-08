@@ -5,8 +5,8 @@ import { Proposals } from '../models/ProposalsModel';
 
 
 export const serviceUploadC = async (req: Request, res: Response) => {
-  const user = await checkAdministrator(req, res);
-  if (!user) {
+  const adminUser = await checkAdministrator(req, res);
+  if (!adminUser) {
     console.error('User is not an administrator');
     return res.status(401).json({ message: 'User is not an administrator' });
   }
@@ -14,25 +14,21 @@ export const serviceUploadC = async (req: Request, res: Response) => {
 }
 
 export const showServiceC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
-  try {
-    await isAdministrator(accessToken);
-    showServiceS(req, res);
-  } catch (err) {
-    console.error('error while checking if user is an administrator at adminController.ts', err);
-    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  const adminUser = await checkAdministrator(req, res);
+  if (!adminUser) {
+    console.error('User is not an administrator');
+    return res.status(401).json({ message: 'User is not an administrator' });
   }
+  showServiceS(req, res);
 }
 
 export const updateServiceC = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
-  try {
-    await isAdministrator(accessToken);
-    updateServiceS(req, res);
-  } catch (err) {
-    console.error('error while checking if user is an administrator at adminController.ts', err);
-    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  const adminUser = await checkAdministrator(req, res);
+  if (!adminUser) {
+    console.error('User is not an administrator');
+    return res.status(401).json({ message: 'User is not an administrator' });
   }
+  updateServiceS(req, res);
 }
 
 export const deleteServiceC = async (req: Request, res: Response) => {
