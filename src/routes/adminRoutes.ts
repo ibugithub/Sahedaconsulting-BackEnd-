@@ -1,6 +1,6 @@
 import express, {Request} from "express";
 import multer from "multer";
-import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, showHiredServiceC, showCompletedServiceC, markCompletedC, markHiredC, showServiceDetailsC, hireFreelancerC, showUsersC, sendFreelancerDetailsC, sendFreelancerProposalsC, changeUserRoleC, addNewUsersC, deleteUserC, createSecretCodeC} from "../controllers/adminController";
+import {serviceUploadC, showServiceC, updateServiceC, deleteServiceC, showHiredServiceC, showCompletedServiceC, markCompletedC, markHiredC, showServiceDetailsC, hireFreelancerC, showUsersC, sendFreelancerDetailsC, sendFreelancerProposalsC, changeUserRoleC, addNewUsersC, deleteUserC, showSecretCodesC, createSecretCodeC, deleteSecretCodeC} from "../controllers/adminController";
 
 const router = express.Router();
 
@@ -37,5 +37,7 @@ router.post('/sendFreelancerProposals', sendFreelancerProposalsC);
 router.put('/changeUserRole', changeUserRoleC);
 router.post('/addUser', addNewUsersC);
 router.delete('/deleteUser/:id', deleteUserC);
-router.post('createSecretCode', createSecretCodeC);
+router.get('/showSecretCodes', showSecretCodesC);
+router.post('/createSecretCode', createSecretCodeC);
+router.delete('/deleteSecretCode/:id', deleteSecretCodeC);
 export default router;

@@ -8,6 +8,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import {  UserRole } from "../interface";
 import bcrypt from 'bcryptjs';
 import { secretCode } from "../models/User";
+import { GenerateSecretCode } from "../Utils/generateSecretCode";
 
 export const serviceUploadS = async (req: Request, res: Response) => {
   let imagePath = "";
@@ -326,7 +327,17 @@ export const deleteUserF = async (req: Request, res: Response, id: string) => {
   return res.status(201).json({ message: 'User deleted successfully' });
 }
 
+export const showSecretCodesF = async (req: Request, res: Response) => {
+  const codes = await secretCode.find();
+  return res.status(201).json({ message: 'Secret codes fetched successfully', codes: codes });
+}
 
 export const createSecretCodeF = async (req: Request, res: Response) => {
+  const code = await GenerateSecretCode();
+  return res.status(201).json({ message: 'Secret code generated successfully', code: code });
+}
 
+export const deleteSecretCodeF = async (req: Request, res: Response, id: string) => {
+  await secretCode.findByIdAndDelete(id);
+  return res.status(201).json({ message: 'Secret code deleted successfully' });
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF, addNewUsersF, deleteUserF, createSecretCodeF } from "../features/adminFeatures"
-import { isAdministrator, checkAdministrator } from '../Utils/auth';
+import { serviceUploadS, showServiceS, updateServiceS, deleteServiceS, markCompletedF, showHiredServiceF, showCompletedServiceF, markHiredF, showServiceDetailsF, hireFreelancerF, showUsersF, sendFreelancerDetailsF, sendFreelancerProposalsF, changeUserRoleF, addNewUsersF, deleteUserF, showSecretCodesF, createSecretCodeF, deleteSecretCodeF } from "../features/adminFeatures"
+import { checkAdministrator } from '../Utils/auth';
 import { Proposals } from '../models/ProposalsModel';
 
 
@@ -167,6 +167,27 @@ export const deleteUserC = async (req: Request, res: Response) => {
   }
   const id = req.params.id;
   return deleteUserF(req, res, id);
+}
+
+export const showSecretCodesC = async (req: Request, res: Response) => {
+  try {
+    await checkAdministrator(req, res);
+  } catch (err) {
+    console.error('error while checking if user is an administrator at adminController.ts', err);
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  }
+  return showSecretCodesF(req, res);
+}
+
+export const deleteSecretCodeC = async (req: Request, res: Response) => {
+  try {
+    await checkAdministrator(req, res);
+  } catch (err) {
+    console.error('error while checking if user is an administrator at adminController.ts', err);
+    return res.status(401).json({ message: 'Error while checking admin user at adminController.ts', err });
+  }
+  const id = req.params.id;
+  return deleteSecretCodeF(req, res, id);
 }
 
 export const createSecretCodeC = async (req: Request, res: Response) => {

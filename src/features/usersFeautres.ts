@@ -6,9 +6,8 @@ import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import bcrypt from 'bcryptjs';
 import { generateAccessToken, generateRefreshToken } from '../Utils/jwtUtils';
-import { isAuthenticated } from '../Utils/auth';
 import { UserInterface } from '../interface';
-import { Buyer, Freelancer } from '../models/User';
+import { Buyer, Freelancer, secretCode } from '../models/User';
 import { sendMailF } from './sendMail';
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
@@ -20,7 +19,7 @@ export const registerF = async (req: Request, res: Response) => {
     const {
       formData, frontEndDomain
     } = req.body;
-    const { firstName, lastName, email, password, cPassword, role } = formData;
+    const { firstName, lastName, email, password, cPassword, role, Code } = formData;
     if (!firstName || !lastName || !email || !password || !cPassword) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -52,6 +51,10 @@ export const registerF = async (req: Request, res: Response) => {
         await newBuyer.save();
       }
       if (role === 'freelancer') {
+        const code = await secretCode.findOne({ code: Code });
+        if (!code) {
+          return res.status(400).json({ error: "Invalid secret code" })
+        }
         const newFreelancer = new Freelancer({
           user: newUser._id,
           skills: [],
@@ -64,6 +67,7 @@ export const registerF = async (req: Request, res: Response) => {
           hireCount: 0
         })
         await newFreelancer.save();
+        await code.deleteOne({ code: Code });
       }
     } catch (error) {
       console.error('error while creating Buyer or Freelancer account', error)
