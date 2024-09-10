@@ -69,3 +69,13 @@ export const changePasswordC = async (req: Request, res: Response) => {
 export const verifyEmailC = async (req: Request, res: Response) => {
   verifyEmailF(req, res);
 }
+
+export const getLoggedInUserC = async (req: Request, res: Response) => {
+  try {
+    const user = await checkAuthentication(req, res);
+    return res.status(201).json({ user });
+  } catch (error: any) {
+    console.error('Error while getting logged in user at userController.ts', error);
+    return res.status(400).json({ message: 'Error while getting logged in user' });
+  }
+}

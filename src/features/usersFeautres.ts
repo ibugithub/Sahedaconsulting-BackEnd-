@@ -12,7 +12,6 @@ import { sendMailF } from './sendMail';
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
 
-
 export const registerF = async (req: Request, res: Response) => {
   console.log('the request body is', req.body);
   try {

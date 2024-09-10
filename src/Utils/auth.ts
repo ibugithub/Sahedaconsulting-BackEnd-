@@ -4,7 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "";
 import { User } from '../models/User';
 import { Request, Response } from 'express';
 
-const tokenToId = (token: string): string | null => {
+export const tokenToId = (token: string): string | null => {
   const parsedAccessToken = JSON.parse(token)
   try {
     const decodedToken = jwt.verify(parsedAccessToken, JWT_SECRET) as JwtPayload
@@ -36,15 +36,23 @@ export const isAdministrator = async (accessToken: string) => {
 }
 
 export const checkAuthentication = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
-  const user = await isAuthenticated(accessToken);
-  return user;
+  try {
+    const accessToken = req.headers.accesstoken as string;
+    const user = await isAuthenticated(accessToken);
+    return user;
+  } catch (err: any) {
+    console.error("Error while checking authentication at auth.ts", err);
+  }
 }
 
 export const checkAdministrator = async (req: Request, res: Response) => {
-  const accessToken = req.headers.accesstoken as string;
-  const user = await isAdministrator(accessToken);
-  return user;
+  try {
+    const accessToken = req.headers.accesstoken as string;
+    const user = await isAdministrator(accessToken);
+    return user;
+  } catch (err: any) {
+    console.error("Error while checking administrator at auth.ts", err);
+  }
 }
 
 export const checkAuthenticationForFrontend = async (req: Request, res: Response) => {
