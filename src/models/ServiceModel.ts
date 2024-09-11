@@ -17,20 +17,25 @@ const serviceShema = new mongoose.Schema<ServiceInterface>({
   image: {
     type: "string"
   },
-  skills : [String],
-  proposals : [{type: mongoose.Schema.Types.ObjectId, ref: 'Proposals'}],  
-  appliedFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
-  proposalsCount : {
+  skills: [String],
+  adminUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
+  },
+  proposals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Proposals' }],
+  appliedFreelancers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer' }],
+  proposalsCount: {
     type: "number",
     default: 0
   },
-  hiredFreelancers : [{type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer'}],
-  hiredCount : {type: "number", default: 0},
-  isHiringClosed : {type: "boolean", default: false},
-  requiredFreelancers: {type: "number", default:1},
-  isCompleted : {type: "boolean", default: false}
-}, 
-{timestamps: true}
+  hiredFreelancers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Freelancer' }],
+  hiredCount: { type: "number", default: 0 },
+  isHiringClosed: { type: "boolean", default: false },
+  requiredFreelancers: { type: "number", default: 1 },
+  isCompleted: { type: "boolean", default: false }
+},
+  { timestamps: true }
 );
 
 export const Service = mongoose.model('Service', serviceShema)

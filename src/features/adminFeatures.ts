@@ -3,6 +3,7 @@ import { Service } from "../models/ServiceModel"
 import { User } from "../models/User";
 import { Freelancer } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
+import { UserInterface } from "../interface";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import {  UserRole } from "../interface";
@@ -10,7 +11,7 @@ import bcrypt from 'bcryptjs';
 import { secretCode } from "../models/User";
 import { GenerateSecretCode } from "../Utils/generateSecretCode";
 
-export const serviceUploadS = async (req: Request, res: Response) => {
+export const serviceUploadS = async (req: Request, res: Response, adminUser: UserInterface) => {
   let imagePath = "";
   let results = { public_id: "noImage" };
   if (req.file) {
@@ -27,6 +28,7 @@ export const serviceUploadS = async (req: Request, res: Response) => {
     }
     const { service, description, price, requiredFreelancer } = req.body
     const newService = new Service({
+      adminUser: adminUser._id,
       title: service,
       description: description,
       price: price,

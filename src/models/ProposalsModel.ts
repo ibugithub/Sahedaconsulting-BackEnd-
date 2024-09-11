@@ -1,4 +1,4 @@
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
 import { ProposalInterface } from "../interface";
 
 const Proposalschema = new mongoose.Schema<ProposalInterface>({
@@ -26,6 +26,6 @@ const Proposalschema = new mongoose.Schema<ProposalInterface>({
     default: 'pending'
   }
 },
-{timestamps: true})
+  { timestamps: true })
 
 export const Proposals = mongoose.model('Proposals', Proposalschema)

@@ -42,6 +42,7 @@ export interface ServiceInterface extends Document {
   price: number;
   image?: string;
   skills: string[];
+  adminUser: Types.ObjectId;
   proposals: Types.ObjectId[];
   appliedFreelancers: Types.ObjectId[];
   proposalsCount?: number;

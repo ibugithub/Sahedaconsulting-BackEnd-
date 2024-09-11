@@ -10,7 +10,7 @@ export const serviceUploadC = async (req: Request, res: Response) => {
     console.error('User is not an administrator');
     return res.status(401).json({ message: 'User is not an administrator' });
   }
-  serviceUploadS(req, res);
+  serviceUploadS(req, res, adminUser);
 }
 
 export const showServiceC = async (req: Request, res: Response) => {
