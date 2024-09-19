@@ -54,9 +54,19 @@ export interface ServiceInterface extends Document {
 }
 
 export interface ProposalInterface extends Document {
+  _id: Types.ObjectId;
   freelancer: Types.ObjectId;
   service: Types.ObjectId;
   coverLetter: string;
   price: number;
   status?: 'pending' | 'accepted' | 'rejected';
+}
+
+export interface NotificationInterface extends Document {
+  user: Types.ObjectId;
+  message: string;
+  type: string;
+  typeId: Types.ObjectId;
+  isRead: boolean;
+  createdAt: Date;
 }

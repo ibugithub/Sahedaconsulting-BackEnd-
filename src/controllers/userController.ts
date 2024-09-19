@@ -3,6 +3,7 @@ import { clearCookie } from '../Utils/clearCookie';
 import { registerF, loginF, refreshTokenF, sendProfileDataF, setImageF, saveUserDataF, changePasswordF } from '../features/usersFeautres';
 import { checkAuthentication, checkAdministratorForFrontend, checkAuthenticationForFrontend } from '../Utils/auth';
 import { verifyEmailF } from '../features/verifyEmail';
+import { Notification } from '../models/notification';
 
 export const register = async (req: Request, res: Response) => {
   registerF(req, res);
@@ -78,4 +79,39 @@ export const getLoggedInUserC = async (req: Request, res: Response) => {
     console.error('Error while getting logged in user at userController.ts', error);
     return res.status(400).json({ message: 'Error while getting logged in user' });
   }
+}
+
+export const showNotificationsC = async (req: Request, res: Response) => {
+  const user = await checkAuthentication(req, res);
+  try {
+    if (user) {
+      const notifications = await Notification.find({ user: user._id });
+      return res.status(200).json({ user: 'authenticatedUser', notifications: notifications });
+    }
+    return res.status(200).json({ user: 'unAuthenticated user', notifications: [] });
+  }
+  catch (error) {
+    console.log("Error while getting notifications by it's id at userController.ts", error);
+  }
+}
+
+export const markNotificationAsReadC = async (req: Request, res: Response) => {
+  const { notificationId } = req.params;
+  const notification = await Notification.findById(notificationId);
+  if (notification) {
+    notification.isRead = true;
+    await notification.save();
+    return res.status(200).json({ message: 'Notification marked as read' });
+  }
+  return res.status(404).json({ message: 'Notification not found at markNotificationAsReadC at userController.ts' });
+}
+
+export const deleteNotificationC = async (req: Request, res: Response) => {
+  const { notificationId } = req.params;
+  const notification = await Notification.findById(notificationId);
+  if (notification) {
+    await Notification.findByIdAndDelete(notificationId);
+    return res.status(200).json({ message: 'Notification deleted' });
+  }
+  return res.status(404).json({ message: 'Notification not found at deleteNotificationC at userController.ts' });
 }

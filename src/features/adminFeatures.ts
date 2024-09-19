@@ -10,6 +10,7 @@ import {  UserRole } from "../interface";
 import bcrypt from 'bcryptjs';
 import { secretCode } from "../models/User";
 import { GenerateSecretCode } from "../Utils/generateSecretCode";
+// const socketIo = require('socket.io');
 
 export const serviceUploadS = async (req: Request, res: Response, adminUser: UserInterface) => {
   let imagePath = "";

@@ -1,5 +1,5 @@
 import express from 'express';
-import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC, changePasswordC, verifyEmailC, getLoggedInUserC} from '../controllers/userController';
+import { register, login, logout, refreshToken, sendProfileDataC, setImageC, saveUserDataC, isAuthenticatedC, isAdministratorC, changePasswordC, verifyEmailC, getLoggedInUserC, showNotificationsC, markNotificationAsReadC, deleteNotificationC} from '../controllers/userController';
 import { upload } from './adminRoutes';
 
 
@@ -16,5 +16,8 @@ router.get('/isAdministrator', isAdministratorC);
 router.post('/changePassword', changePasswordC);
 router.post('/verifyEmail', verifyEmailC);
 router.get('/getLoggedInUser', getLoggedInUserC);
+router.get('/showNotifications', showNotificationsC);
+router .put('/markNotificationAsRead/:notificationId', markNotificationAsReadC);
+router.delete('/deleteNotification/:notificationId', deleteNotificationC);
 
 export default router;
