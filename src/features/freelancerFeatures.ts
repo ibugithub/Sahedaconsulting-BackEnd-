@@ -77,8 +77,10 @@ export const addProposalF = async (req: Request, res: Response, user: UserInterf
     }
     const message = `A proposal has been sent for ${service.title} by ${freelanceUser.firstName} ${freelanceUser.lastName}`;
     await addNotification(adminUser, message, newProposal._id as ObjectId);
+
     const io = req.app.get('socketio');
-    io.emit('notification',{message: 'hello world'});
+    io.emit(`${adminUser._id}notification`,{message: 'new proposal added'});
+    console.log('notification signal has been sent from the freelancerFeature.ts to the sockets');
   }
   catch (error) {
     console.error('Error while creating proposal', error);
