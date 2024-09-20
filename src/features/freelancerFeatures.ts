@@ -3,10 +3,10 @@ import { Service } from "../models/ServiceModel";
 import { Proposals } from "../models/ProposalsModel";
 import { Freelancer, User} from "../models/User";
 import { isAlreadyApplied } from "../Utils/proposals";
-import { Notification } from "../models/notification";
 import { checkAuthentication } from "../Utils/auth";
 import { ObjectId } from "mongodb";
 import { UserInterface, ProposalInterface } from "../interface";
+import { AddNotification } from "../Utils/notifications";
 
 export const showWorksFeature = async (req: Request, res: Response) => {
   try {
@@ -28,15 +28,7 @@ export const showWorkFeature = async (req: Request, res: Response) => {
   }
 }
 
-const addNotification = async (user: UserInterface, message: string,  id: ObjectId) => {
-  const newNotification = new Notification({
-    user: user,
-    message: message,
-    type: 'proposal',
-    typeId: id,
-  });
-  await newNotification.save();
-}
+
 
 export const addProposalF = async (req: Request, res: Response, user: UserInterface, proposalData: ProposalInterface) => {
   try {
@@ -62,24 +54,27 @@ export const addProposalF = async (req: Request, res: Response, user: UserInterf
       price: proposalData.price,
     });
 
-    // freelancer.proposals.push(newProposal._id as ObjectId);
-    // service.proposals.push(newProposal._id as ObjectId);
-    // service.proposalsCount = (service.proposalsCount ?? 0) + 1;
-    // service.appliedFreelancers.push(freelancer._id as ObjectId);
-    // await newProposal.save();
-    // await freelancer.save();
-    // await service.save();
+    freelancer.proposals.push(newProposal._id as ObjectId);
+    service.proposals.push(newProposal._id as ObjectId);
+    service.proposalsCount = (service.proposalsCount ?? 0) + 1;
+    service.appliedFreelancers.push(freelancer._id as ObjectId);
+    await newProposal.save();
+    await freelancer.save();
+    await service.save();
 
     const adminUser = await User.findById(service.adminUser);
     if (!adminUser) {
       console.error('Admin user not found at freelancerFeatures.ts');
       return res.status(404).json({ message: 'Admin user not found at freelancerFeatures.ts' });
     }
-    const message = `A proposal has been sent for ${service.title} by ${freelanceUser.firstName} ${freelanceUser.lastName}`;
-    await addNotification(adminUser, message, newProposal._id as ObjectId);
 
+    const message = `A proposal has been sent for ${service.title} by ${freelanceUser.firstName} ${freelanceUser.lastName}`;
+
+    await AddNotification(adminUser, message, 'addProposal', newProposal._id as ObjectId);
+
+    // sending proposals adding newProposal for admin users
     const io = req.app.get('socketio');
-    io.emit(`${adminUser._id}notification`,{message: 'new proposal added'});
+    io.emit(`${adminUser._id}addProposalNotification`,{message: 'add proposal notification sent from the freelancerFeature.ts to notification.tsx'});
     console.log('notification signal has been sent from the freelancerFeature.ts to the sockets');
   }
   catch (error) {

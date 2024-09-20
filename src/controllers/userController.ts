@@ -77,21 +77,21 @@ export const getLoggedInUserC = async (req: Request, res: Response) => {
     return res.status(201).json({ user });
   } catch (error: any) {
     console.error('Error while getting logged in user at userController.ts', error);
-    return res.status(400).json({ message: 'Error while getting logged in user' });
+    return res.status(200).json({});
   }
 }
 
 export const showNotificationsC = async (req: Request, res: Response) => {
-  const user = await checkAuthentication(req, res);
   try {
+    const user = await checkAuthentication(req, res);
     if (user) {
       const notifications = await Notification.find({ user: user._id });
       return res.status(200).json({ user: 'authenticatedUser', notifications: notifications });
     }
-    return res.status(200).json({ user: 'unAuthenticated user', notifications: [] });
   }
   catch (error) {
     console.log("Error while getting notifications by it's id at userController.ts", error);
+    return res.status(200).json({ user: 'unAuthenticated user', notifications: [] });
   }
 }
 

@@ -3,14 +3,15 @@ import { Service } from "../models/ServiceModel"
 import { User } from "../models/User";
 import { Freelancer } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
-import { UserInterface } from "../interface";
+import { FreelancerInterface, UserInterface } from "../interface";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import {  UserRole } from "../interface";
 import bcrypt from 'bcryptjs';
 import { secretCode } from "../models/User";
 import { GenerateSecretCode } from "../Utils/generateSecretCode";
-// const socketIo = require('socket.io');
+import { AddNotification } from "../Utils/notifications";
+import { ObjectId } from "mongodb";
 
 export const serviceUploadS = async (req: Request, res: Response, adminUser: UserInterface) => {
   let imagePath = "";
@@ -214,22 +215,41 @@ export const hireFreelancerF = async (req: Request, res: Response) => {
     console.error('Could not find the proposal at adminFeatures.ts');
     return res.status(404).json({ error: 'Proposal not found' });
   }
-  if (proposal.status === 'accepted') {
-    return res.status(400).json({ error: 'Already hired' });
-  }
-  proposal.status = 'accepted';
-  await proposal.save();
   const newService = await Service.findById(serviceId);
   if (!newService) {
     console.error('Could not find the service at adminFeatures.ts');
     return res.status(404).json({ error: 'Service not found' });
   }
+
+  if (proposal.status === 'accepted') {
+    return res.status(400).json({ error: 'Already hired' });
+  }
+
+  proposal.status = 'accepted';
+  await proposal.save();
+
   newService.hiredFreelancers.push(freelancerId);
   newService.hiredCount = (newService.hiredCount ?? 0) + 1;
   if (newService.hiredCount === newService.requiredFreelancers) {
     newService.isHiringClosed = true;
   }
   await newService.save();
+
+  // Adding notification for freelancer
+  const adminUser = await User.findById(newService.adminUser);
+  const freelancer = await Freelancer.findById(freelancerId).populate('user');
+  const user = await User.findById(freelancer?.user);
+
+  if (!user || !adminUser) {
+    console.error('Freelancer or admin user not found at hireFreelancerF at adminFeatures.ts');
+    return res.status(404).json({ message: 'Freelancer or admin user not found' });
+  }
+  const message = `Congratulation you've been hired by ${adminUser?.firstName} ${adminUser?.lastName} for service ${newService.title}`;
+  await AddNotification(user , message, 'freelancerHired', proposal._id as ObjectId);
+  
+  // sending the notification to the freelancer
+  const io = req.app.get('socketio');
+  io.emit(`${freelancerId}freelancerHiredNotification`, {message:'freelancer hired notification sent from the adminFeatures.ts'});
   res.status(201).json({ message: 'Hired successfully' });
 }
 
