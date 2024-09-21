@@ -15,7 +15,6 @@ export const tokenToId = (token: string): string | null => {
   }
 }
 
-
 export const checkAuthentication = async (req: Request, res: Response) => {
   const accessToken = req.headers.accesstoken as string;
   const id = tokenToId(accessToken)
@@ -52,11 +51,10 @@ export const checkAuthenticationForFrontend = async (req: Request, res: Response
 }
 
 export const checkAdministratorForFrontend = async (req: Request, res: Response) => {
-  try {
-    const user = await checkAdministrator(req, res);
-    return res.status(200).json({ message: 'User is an administrator', user });
-  } catch (err) {
-    console.error('error while checking if user is an administrator at users.ts');
-    return res.status(401).json({ message: 'Error while checking admin user at users.ts' });
+  const adminUser = await checkAdministrator(req, res);
+  if (!adminUser) {
+    console.error('error while checking if user is an administrator at auth.ts');
+    return res.status(401).json({ message: 'Error while checking admin user at auth.ts' });
   }
+  return res.status(200).json({ message: 'User is an administrator', adminUser });
 } 

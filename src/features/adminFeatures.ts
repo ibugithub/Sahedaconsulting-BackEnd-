@@ -249,7 +249,7 @@ export const hireFreelancerF = async (req: Request, res: Response) => {
   
   // sending the notification to the freelancer
   const io = req.app.get('socketio');
-  io.emit(`${freelancerId}freelancerHiredNotification`, {message:'freelancer hired notification sent from the adminFeatures.ts'});
+  io.emit(`${user._id}freelancerHiredNotification`, {message:'freelancer hired notification sent from the adminFeatures.ts'});
   res.status(201).json({ message: 'Hired successfully' });
 }
 
