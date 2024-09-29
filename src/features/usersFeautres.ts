@@ -89,7 +89,7 @@ export const loginF = async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email })
     if (!user) {
-      return res.status(401).json({ error: "Invalid Credintails" })
+      return res.status(401).json({ error: "Invalid Credintails" });
     }
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
