@@ -3,7 +3,7 @@ import { Service } from "../models/ServiceModel"
 import { User } from "../models/User";
 import { Freelancer } from "../models/User";
 import { Proposals } from "../models/ProposalsModel";
-import { FreelancerInterface, UserInterface } from "../interface";
+import { UserInterface } from "../interface";
 import fs from 'fs';
 import { v2 as cloudinary } from 'cloudinary';
 import {  UserRole } from "../interface";

@@ -1,5 +1,4 @@
 import { UserInterface } from "../interface";
-import { FreelancerInterface } from "../interface";
 import { Notification } from "../models/notification";
 import { ObjectId } from "mongodb";
 export const AddNotification = async (user: UserInterface, message: string, type: string,  typeid: ObjectId) => {
