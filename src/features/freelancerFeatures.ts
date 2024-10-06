@@ -126,3 +126,18 @@ export const showFreelancerProposalsF = async (req: Request, res: Response, user
   }
   return res.status(200).json({ proposals });
 }
+
+
+export const showFreelancerProposalDetailsF = async (req: Request, res: Response, user: UserInterface, id: string) => {
+  const freelancer = await Freelancer.findOne({ user: user._id });
+  if (!freelancer) {
+    console.error('Freelancer not found');
+    return res.status(404).json({ message: 'Freelancer not found' });
+  }
+  const proposalDetails = await Proposals.findOne({ _id: id, freelancer: freelancer._id }).populate('service');
+  if (!proposalDetails) {
+    console.error('Offer details not found');
+    return res.status(404).json({ message: 'Offer details not found' });
+  }
+  return res.status(200).json({ proposalDetails});
+}
