@@ -1,0 +1,1 @@
+{"version":3,"file":"clearCookie.js","sourceRoot":"","sources":["../../../src/Utils/clearCookie.ts"],"names":[],"mappings":";;;AAEO,MAAM,WAAW,GAAG,CAAC,GAAa,EAAE,UAAkB,EAAE,EAAE;IAC/D,GAAG,CAAC,WAAW,CAAC,UAAU,CAAC,CAAA;IAC3B,OAAO,GAAG,CAAC,MAAM,CAAC,GAAG,CAAC,CAAC,IAAI,CAAC,EAAC,OAAO,EAAE,6BAA6B,EAAC,CAAC,CAAA;AACvE,CAAC,CAAA;AAHY,QAAA,WAAW,eAGvB"}

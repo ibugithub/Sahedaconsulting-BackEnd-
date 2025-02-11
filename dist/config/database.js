@@ -17,3 +17,4 @@ const connectDb = () => {
     });
 };
 exports.connectDb = connectDb;
+//# sourceMappingURL=database.js.map
